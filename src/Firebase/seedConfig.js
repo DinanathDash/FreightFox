@@ -4,13 +4,13 @@ import { getAuth } from "firebase/auth";
 
 // For the seeding script only - using environment variables from .env file
 const firebaseConfig = {
-  apiKey: "AIzaSyAEAv9OHmNZRWZ2lQ0KtLQkxycsssoWdBc",
-  authDomain: "freight-fox.firebaseapp.com",
-  projectId: "freight-fox",
-  storageBucket: "freight-fox.firebasestorage.app",
-  messagingSenderId: "219912613482",
-  appId: "1:219912613482:web:7a3780aa0009c286776413",
-  measurementId: "G-ZBEKHH3XX3"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
