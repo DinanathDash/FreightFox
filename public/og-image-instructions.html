@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creating Your Open Graph Image</title>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #ff6e33;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #99421f;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .tips {
+      background-color: #f8f9fa;
+      border-left: 4px solid #ff6e33;
+      padding: 15px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Creating Your FreightFox Open Graph Image</h1>
+  
+  <p>This guide will help you create an optimal Open Graph image for FreightFox that will look good when shared on social media platforms.</p>
+  
+  <h2>Optimal Specifications</h2>
+  <ul>
+    <li><strong>Format:</strong> PNG or JPG</li>
+    <li><strong>Dimensions:</strong> 1200 × 630 pixels (2:1 aspect ratio)</li>
+    <li><strong>File size:</strong> Less than 1MB (ideally under 300KB)</li>
+    <li><strong>Important content:</strong> Keep main content in the center 1080 × 600 pixels as some platforms may crop edges</li>
+  </ul>
+  
+  <h2>Creation Steps</h2>
+  <ol>
+    <li>Open a graphics editor like Adobe Photoshop, GIMP, Figma, or Canva</li>
+    <li>Create a new document with 1200 × 630 pixel dimensions</li>
+    <li>Set up a background that matches FreightFox branding (gradient from #FF6E33 to #99421F or use a solid color)</li>
+    <li>Place the FreightFox logo (from src/assets/Logo.svg) prominently in the center</li>
+    <li>Add a tagline or brief description if desired (keep it minimal)</li>
+    <li>Export as PNG with the name "og-image.png"</li>
+    <li>Replace the placeholder file in the public folder</li>
+  </ol>
+  
+  <div class="tips">
+    <h3>Tips for Better Engagement</h3>
+    <ul>
+      <li>Use your brand colors consistently</li>
+      <li>Make sure any text is legible (not too small)</li>
+      <li>Include your logo</li>
+      <li>Keep the design simple and focused</li>
+      <li>Test how it looks when shared on different platforms</li>
+    </ul>
+  </div>
+  
+  <h2>Example Code for Creating Canvas-based Image</h2>
+  <p>You could also generate the image programmatically using HTML5 Canvas:</p>
+  
+  <pre>
+// Create a canvas element
+const canvas = document.createElement('canvas');
+canvas.width = 1200;
+canvas.height = 630;
+const ctx = canvas.getContext('2d');
+
+// Create gradient background
+const gradient = ctx.createLinearGradient(0, 0, 0, 630);
+gradient.addColorStop(0, '#FF6E33');
+gradient.addColorStop(1, '#99421F');
+ctx.fillStyle = gradient;
+ctx.fillRect(0, 0, 1200, 630);
+
+// Load and draw logo
+const logo = new Image();
+logo.onload = function() {
+  // Center the logo
+  const logoWidth = 500; // Adjust as needed
+  const logoHeight = 100; // Adjust as needed
+  ctx.drawImage(logo, (1200 - logoWidth) / 2, (630 - logoHeight) / 2, logoWidth, logoHeight);
+  
+  // Add tagline
+  ctx.font = 'bold 32px Montserrat';
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+  ctx.fillText('Smart Freight Management', 600, 430);
+  
+  // Convert to PNG
+  const dataUrl = canvas.toDataURL('image/png');
+  
+  // You can then download this or save it to your server
+};
+logo.src = '/src/assets/Logo.svg';
+  </pre>
+  
+  <p>Once you have created your og-image.png file, place it in the public folder to complete your Open Graph setup.</p>
+</body>
+</html>
