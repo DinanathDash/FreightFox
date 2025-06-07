@@ -3,6 +3,8 @@ import DashboardLayout from '../../Components/Dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "../../Components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../Components/ui/table";
 import { Button } from "../../Components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../Components/ui/select";
+import SimpleTracker from '../../Components/Shipment/SimpleTracker.jsx';
 import { getAllOrders, getDashboardStats } from '../../Firebase/services.js';
 
 function DashboardPage() {
@@ -36,9 +38,9 @@ function DashboardPage() {
         const dashboardStats = await getDashboardStats(activeFilter);
         setStats(dashboardStats);
         
-        // Set an active tracking ID from the first order if available
-        if (orders.length > 0 && orders[0].trackingId) {
-          setActiveTrackingId(orders[0].trackingId);
+        // Set active tracking ID using orderId instead of trackingId for easier user searching
+        if (orders.length > 0) {
+          setActiveTrackingId(orders[0].orderId || orders[0].id || orders[0].trackingId);
         }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -116,8 +118,8 @@ function DashboardPage() {
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4'>
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
+          {/* Stats Cards - Now only Total Shipments and Delivered in single column */}
+          <div className="grid grid-cols-1 gap-4 mt-4">
             {/* Total Shipments */}
             <Card className="overflow-hidden">
               <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3">
@@ -142,66 +144,6 @@ function DashboardPage() {
                   <div className="flex items-center mt-1">
                     <span className="text-xs text-gray-500">VS Last Week</span>
                     <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-100 text-green-800 rounded">+150</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Total Orders */}
-            <Card className="overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-blue-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3.17 7.44L12 12.55L20.77 7.47" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M12 21.61V12.54" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M9.93 2.48L4.59 5.45C3.38 6.12 2.39 7.8 2.39 9.18V14.83C2.39 16.21 3.38 17.89 4.59 18.56L9.93 21.53C11.07 22.16 12.94 22.16 14.08 21.53L19.42 18.56C20.63 17.89 21.62 16.21 21.62 14.83V9.18C21.62 7.8 20.63 6.12 19.42 5.45L14.08 2.48C12.93 1.84 11.07 1.84 9.93 2.48Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <CardTitle className="text-sm font-medium">Total Order</CardTitle>
-                </div>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="2" fill="currentColor" />
-                    <circle cx="19" cy="12" r="2" fill="currentColor" />
-                    <circle cx="5" cy="12" r="2" fill="currentColor" />
-                  </svg>
-                </button>
-              </CardHeader>
-              <CardContent className="pb-3 pt-1">
-                <div className="flex flex-col">
-                  <div className="text-3xl font-bold">{loading ? "..." : stats.totalOrders.toLocaleString()}</div>
-                  <div className="flex items-center mt-1">
-                    <span className="text-xs text-gray-500">VS Last Week</span>
-                    <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-100 text-green-800 rounded">+150</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Revenue */}
-            <Card className="overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-blue-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8.67188 14.3298C8.67188 15.6198 9.66188 16.6598 10.8919 16.6598H13.4019C14.4719 16.6598 15.3419 15.7498 15.3419 14.6298C15.3419 13.4098 14.8119 12.9798 14.0219 12.6998L9.99187 11.2998C9.20187 11.0198 8.67188 10.5898 8.67188 9.36984C8.67188 8.24984 9.54187 7.33984 10.6119 7.33984H13.1219C14.3519 7.33984 15.3419 8.37984 15.3419 9.66984" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M12 6V18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-                </div>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="2" fill="currentColor" />
-                    <circle cx="19" cy="12" r="2" fill="currentColor" />
-                    <circle cx="5" cy="12" r="2" fill="currentColor" />
-                  </svg>
-                </button>
-              </CardHeader>
-              <CardContent className="pb-3 pt-1">
-                <div className="flex flex-col">
-                  <div className="text-3xl font-bold">{loading ? "..." : `$${stats.revenue.toLocaleString()}`}</div>
-                  <div className="flex items-center mt-1">
-                    <span className="text-xs text-gray-500">VS Last Week</span>
-                    <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-100 text-green-800 rounded">+$150</span>
                   </div>
                 </div>
               </CardContent>
@@ -242,64 +184,14 @@ function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-          {/* Tracking Map */}
+          {/* Tracking Progress */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-            <Card className="col-span-full lg:col-span-2">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle>Tracking Track</CardTitle>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="2" fill="currentColor" />
-                    <circle cx="19" cy="12" r="2" fill="currentColor" />
-                    <circle cx="5" cy="12" r="2" fill="currentColor" />
-                  </svg>
-                </button>
-              </CardHeader>
-              <CardContent className="p-0 pb-1">
-                <div className="relative h-[200px] rounded-md overflow-hidden">
-                  {/* Map styling to match screenshot */}
-                  <div className="absolute inset-0 bg-blue-50">
-                    {/* Route illustration with SVG - updated to match the image */}
-                    <svg viewBox="0 0 400 200" className="w-full h-full">
-                      {/* Background styling */}
-                      <rect x="0" y="0" width="400" height="200" fill="#f0f7ff" />
-
-                      {/* Route path - matching blue line in image */}
-                      <path
-                        d="M50,150 C90,100 130,170 170,130 C210,90 250,130 300,70 C330,40 350,50 370,30"
-                        stroke="#3b82f6"
-                        strokeWidth="4"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-
-                      {/* Start point */}
-                      <circle cx="50" cy="150" r="5" fill="#3b82f6" />
-
-                      {/* Midpoint */}
-                      <circle cx="170" cy="130" r="5" fill="#3b82f6" />
-                      <circle cx="170" cy="130" r="8" fill="#3b82f6" fillOpacity="0.3" />
-
-                      {/* Current location point with outer ring */}
-                      <circle cx="370" cy="30" r="5" fill="#3b82f6" />
-                      <circle cx="370" cy="30" r="8" fill="#3b82f6" fillOpacity="0.3" />
-                      <circle cx="370" cy="30" r="11" fill="#3b82f6" fillOpacity="0.2" />
-                    </svg>
-                  </div>
-
-                  {/* ID selector dropdown - matches the UI in the image */}
-                  <div className="absolute bottom-3 right-3">
-                    <div className="bg-white rounded-md shadow-sm p-2 flex items-center space-x-2 border border-gray-100">
-                      <span className="text-xs font-medium text-gray-700">ID: {activeTrackingId}</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Use our SimpleTracker component with tracking data */}
+            <SimpleTracker 
+              orders={shipments} 
+              activeTrackingId={activeTrackingId}
+              setActiveTrackingId={setActiveTrackingId}
+            />
           </div>
         </div>
 

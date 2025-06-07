@@ -1,4 +1,4 @@
-import { db, auth } from './seedConfig.js';
+import { db, auth } from './sharedConfig.js';
 import { collection, addDoc, Timestamp, serverTimestamp, getDocs, query, where, setDoc, doc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
