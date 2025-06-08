@@ -55,9 +55,12 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId }) {
 
   // Set up path coordinates based on order data
   const getPathCoordinates = () => {
-    if (!activeOrder || !activeOrder.shipping) return [];
+    if (!activeOrder) return [];
   
-    const { source, destination, currentLocation } = activeOrder.shipping;
+    // Check for new structure (from/to) first, then fall back to legacy structure
+    const source = activeOrder.from || (activeOrder.shipping?.source);
+    const destination = activeOrder.to || (activeOrder.shipping?.destination);
+    const currentLocation = activeOrder.currentLocation || activeOrder.shipping?.currentLocation;
     
     // If we have source and destination coordinates
     if (source?.coordinates && destination?.coordinates) {
@@ -149,51 +152,51 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId }) {
             />
             
             {/* Source Marker */}
-            {activeOrder?.shipping?.source?.coordinates && (
+            {(activeOrder?.from?.coordinates || activeOrder?.shipping?.source?.coordinates) && (
               <Marker 
                 position={[
-                  activeOrder.shipping.source.coordinates.lat,
-                  activeOrder.shipping.source.coordinates.lng
+                  (activeOrder.from?.coordinates || activeOrder.shipping?.source?.coordinates).lat,
+                  (activeOrder.from?.coordinates || activeOrder.shipping?.source?.coordinates).lng
                 ]}
                 icon={sourceIcon}
               >
                 <Popup>
                   <div className="text-sm font-medium">
-                    Origin: {activeOrder.shipping.source.city}, {activeOrder.shipping.source.country}
+                    Origin: {(activeOrder.from || activeOrder.shipping?.source).city}, {(activeOrder.from || activeOrder.shipping?.source).country}
                   </div>
                 </Popup>
               </Marker>
             )}
             
             {/* Current Location Marker */}
-            {activeOrder?.shipping?.currentLocation?.coordinates && (
+            {(activeOrder?.currentLocation?.coordinates || activeOrder?.shipping?.currentLocation?.coordinates) && (
               <Marker 
                 position={[
-                  activeOrder.shipping.currentLocation.coordinates.lat,
-                  activeOrder.shipping.currentLocation.coordinates.lng
+                  (activeOrder.currentLocation?.coordinates || activeOrder.shipping?.currentLocation?.coordinates).lat,
+                  (activeOrder.currentLocation?.coordinates || activeOrder.shipping?.currentLocation?.coordinates).lng
                 ]}
                 icon={currentIcon}
               >
                 <Popup>
                   <div className="text-sm font-medium">
-                    Current Location: {activeOrder.shipping.currentLocation.city || 'In Transit'}
+                    Current Location: {(activeOrder.currentLocation || activeOrder.shipping?.currentLocation).city || 'In Transit'}
                   </div>
                 </Popup>
               </Marker>
             )}
             
             {/* Destination Marker */}
-            {activeOrder?.shipping?.destination?.coordinates && (
+            {(activeOrder?.to?.coordinates || activeOrder?.shipping?.destination?.coordinates) && (
               <Marker 
                 position={[
-                  activeOrder.shipping.destination.coordinates.lat,
-                  activeOrder.shipping.destination.coordinates.lng
+                  (activeOrder.to?.coordinates || activeOrder.shipping?.destination?.coordinates).lat,
+                  (activeOrder.to?.coordinates || activeOrder.shipping?.destination?.coordinates).lng
                 ]}
                 icon={destinationIcon}
               >
                 <Popup>
                   <div className="text-sm font-medium">
-                    Destination: {activeOrder.shipping.destination.city}, {activeOrder.shipping.destination.country}
+                    Destination: {(activeOrder.to || activeOrder.shipping?.destination).city}, {(activeOrder.to || activeOrder.shipping?.destination).country}
                   </div>
                 </Popup>
               </Marker>

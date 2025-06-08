@@ -70,10 +70,6 @@ function DashboardLayout({ children }) {
                 className="flex items-center space-x-3 cursor-pointer"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
               >
-                <div className="text-right">
-                  <p className="font-medium text-gray-700">{currentUser?.displayName || "User"}</p>
-                  <p className="text-sm text-gray-500">{currentUser?.email}</p>
-                </div>
                 <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden border-2 border-indigo-100">
                   {currentUser?.photoURL ? (
                     <>

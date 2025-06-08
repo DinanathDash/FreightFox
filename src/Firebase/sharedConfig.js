@@ -9,6 +9,17 @@ import { getFirestore } from "firebase/firestore";
 // Check if running in browser or Node environment
 const isBrowser = typeof window !== 'undefined';
 
+// Load environment variables from .env file in Node.js environment
+if (!isBrowser) {
+  try {
+    import('dotenv').then(dotenv => {
+      dotenv.config();
+    });
+  } catch (error) {
+    console.log('dotenv not available, continuing without it');
+  }
+}
+
 // Get config based on environment
 function getFirebaseConfig() {
   if (isBrowser) {

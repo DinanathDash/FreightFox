@@ -54,22 +54,22 @@ export function getPointAlongRoute(source, destination, progress) {
 
 // Enhance an order with realistic shipping coordinates
 export function enhanceOrderWithCoordinates(order) {
-  // Create default shipping object if it doesn't exist
-  const shipping = order.shipping || {};
+  // Check if using new structure (from/to) or legacy structure (shipping)
+  const useNewStructure = order.from && order.to;
   
   // Use existing source and destination cities if available
   let sourceCity;
   let destinationCity;
   
-  // If we already have source city information but no coordinates
-  if (shipping.source && shipping.source.city) {
-    // Find the matching city in our majorCities list
-    sourceCity = majorCities.find(c => c.city === shipping.source.city);
+  // Handle source/from location
+  if (useNewStructure && order.from && order.from.city) {
+    // Using new structure
+    sourceCity = majorCities.find(c => c.city === order.from.city);
     // If not found, use a matching country or random city
     if (!sourceCity) {
-      if (shipping.source.country) {
+      if (order.from.country) {
         // Try to find a city in the same country
-        const citiesInCountry = majorCities.filter(c => c.country === shipping.source.country);
+        const citiesInCountry = majorCities.filter(c => c.country === order.from.country);
         if (citiesInCountry.length > 0) {
           sourceCity = citiesInCountry[0];
         }
@@ -78,8 +78,30 @@ export function enhanceOrderWithCoordinates(order) {
       if (!sourceCity) {
         const randomCity = getRandomCity();
         sourceCity = {
-          city: shipping.source.city,
-          country: shipping.source.country || randomCity.country,
+          city: order.from.city,
+          country: order.from.country || randomCity.country,
+          coordinates: randomCity.coordinates
+        };
+      }
+    }
+  } else if (order.shipping && order.shipping.source && order.shipping.source.city) {
+    // Using legacy structure
+    sourceCity = majorCities.find(c => c.city === order.shipping.source.city);
+    // If not found, use a matching country or random city
+    if (!sourceCity) {
+      if (order.shipping.source.country) {
+        // Try to find a city in the same country
+        const citiesInCountry = majorCities.filter(c => c.country === order.shipping.source.country);
+        if (citiesInCountry.length > 0) {
+          sourceCity = citiesInCountry[0];
+        }
+      }
+      // If still not found, use a random city but preserve the city name
+      if (!sourceCity) {
+        const randomCity = getRandomCity();
+        sourceCity = {
+          city: order.shipping.source.city,
+          country: order.shipping.source.country || randomCity.country,
           coordinates: randomCity.coordinates
         };
       }
@@ -90,20 +112,42 @@ export function enhanceOrderWithCoordinates(order) {
   }
   
   // Same approach for destination
-  if (shipping.destination && shipping.destination.city) {
-    destinationCity = majorCities.find(c => c.city === shipping.destination.city);
+  if (useNewStructure && order.to && order.to.city) {
+    // Using new structure
+    destinationCity = majorCities.find(c => c.city === order.to.city);
     if (!destinationCity) {
-      if (shipping.destination.country) {
-        const citiesInCountry = majorCities.filter(c => c.country === shipping.destination.country);
+      if (order.to.country) {
+        const citiesInCountry = majorCities.filter(c => c.country === order.to.country);
         if (citiesInCountry.length > 0) {
           destinationCity = citiesInCountry[0];
         }
       }
+      // If still not found, use a random city but preserve the city name
       if (!destinationCity) {
         const randomCity = getRandomCity();
         destinationCity = {
-          city: shipping.destination.city,
-          country: shipping.destination.country || randomCity.country,
+          city: order.to.city,
+          country: order.to.country || randomCity.country,
+          coordinates: randomCity.coordinates
+        };
+      }
+    }
+  } else if (order.shipping && order.shipping.destination && order.shipping.destination.city) {
+    // Using legacy structure
+    destinationCity = majorCities.find(c => c.city === order.shipping.destination.city);
+    if (!destinationCity) {
+      if (order.shipping.destination.country) {
+        const citiesInCountry = majorCities.filter(c => c.country === order.shipping.destination.country);
+        if (citiesInCountry.length > 0) {
+          destinationCity = citiesInCountry[0];
+        }
+      }
+      // If still not found, use a random city but preserve the city name
+      if (!destinationCity) {
+        const randomCity = getRandomCity();
+        destinationCity = {
+          city: order.shipping.destination.city,
+          country: order.shipping.destination.country || randomCity.country,
           coordinates: randomCity.coordinates
         };
       }
@@ -163,30 +207,62 @@ export function enhanceOrderWithCoordinates(order) {
     };
   }
   
-  // Create shipping object with coordinates, preserving original data
-  const enhancedShipping = {
-    ...shipping,
-    source: {
-      ...(shipping.source || {}),  // Preserve any existing fields
+  if (useNewStructure) {
+    // If order already has coordinates, don't modify them
+    if (order.from?.coordinates && order.to?.coordinates) {
+      return order;
+    }
+    
+    // Create enhanced from/to objects with coordinates
+    const enhancedFrom = {
+      ...(order.from || {}),  // Preserve any existing fields
       city: sourceCity.city,
       country: sourceCity.country,
       coordinates: sourceCity.coordinates
-    },
-    destination: {
-      ...(shipping.destination || {}),  // Preserve any existing fields
+    };
+    
+    const enhancedTo = {
+      ...(order.to || {}),  // Preserve any existing fields
       city: destinationCity.city,
       country: destinationCity.country,
       coordinates: destinationCity.coordinates
-    },
-    distance,
-    currentLocation
-  };
-  
-  // Return the enhanced order
-  return {
-    ...order,
-    shipping: enhancedShipping
-  };
+    };
+    
+    // Return the enhanced order with new structure
+    return {
+      ...order,
+      from: enhancedFrom,
+      to: enhancedTo,
+      currentLocation,
+      distance
+    };
+  } else {
+    // Legacy structure - create shipping object with coordinates, preserving original data
+    const shipping = order.shipping || {};
+    const enhancedShipping = {
+      ...shipping,
+      source: {
+        ...(shipping.source || {}),  // Preserve any existing fields
+        city: sourceCity.city,
+        country: sourceCity.country,
+        coordinates: sourceCity.coordinates
+      },
+      destination: {
+        ...(shipping.destination || {}),  // Preserve any existing fields
+        city: destinationCity.city,
+        country: destinationCity.country,
+        coordinates: destinationCity.coordinates
+      },
+      distance,
+      currentLocation
+    };
+    
+    // Return the enhanced order
+    return {
+      ...order,
+      shipping: enhancedShipping
+    };
+  }
 }
 
 export default {

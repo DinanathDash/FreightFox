@@ -1,71 +1,24 @@
 /**
- * This script is designed to run in Node.js environment to generate historical orders
- * for existing authenticated users in the database.
- * 
- * It loads Firebase configuration from environment variables in the .env file
+ * This script generates orders with the new from/to structure
+ * It's designed to be run as a Node.js script
  */
 
-import { db, auth } from './sharedConfig.js';
+import { db } from './sharedConfig.js';
 import { 
   collection, 
   getDocs, 
   addDoc, 
   Timestamp, 
-  query,
-  where,
   doc,
-  getDoc,
-  setDoc,
-  serverTimestamp
+  getDoc
 } from 'firebase/firestore';
-import { createFirestoreUsers, getExistingFirestoreUsers } from './createFirestoreUsers.js';
 
 /**
- * Create user records in Firestore for the users from Firebase Authentication
- * This is required if users exist in Authentication but not in Firestore
+ * Fetch all users from the Users collection
  */
-async function ensureFirestoreUsers() {
+export async function getAllUsers() {
   try {
-    console.log('Checking for existing users in Firestore...');
-    
-    // First check if there are already users in Firestore
-    const existingUsers = await getExistingFirestoreUsers();
-    
-    if (existingUsers.length > 0) {
-      console.log(`Found ${existingUsers.length} existing users in Firestore. No need to create new ones.`);
-      return existingUsers;
-    }
-    
-    // If no users found, create some based on the emails from authentication
-    console.log('No users found in Firestore. Creating user records based on authenticated emails...');
-    
-    // These would be the emails of users in your Firebase Authentication
-    // Replace with the actual emails shown in your Firebase Authentication console
-    const authEmails = [
-      't5379880@gmail.com',
-      'sagarprempady2@gmail.com',
-      'dinanathdash0@gmail.com',
-      'dashdinanath056@gmail.com'
-    ];
-    
-    // Create user records in Firestore
-    const createdUsers = await createFirestoreUsers(authEmails);
-    return createdUsers;
-  } catch (error) {
-    console.error('Error ensuring Firestore users:', error);
-    throw error;
-  }
-}
-
-/**
- * Fetch all authenticated users from Firestore
- */
-async function getAuthenticatedUsers() {
-  try {
-    // Make sure we have users in Firestore first
-    await ensureFirestoreUsers();
-    
-    console.log('Fetching authenticated users from Firestore...');
+    console.log('Fetching users from Firestore...');
     const usersCollection = collection(db, 'Users');
     const userSnapshot = await getDocs(usersCollection);
     
@@ -74,10 +27,10 @@ async function getAuthenticatedUsers() {
       users.push({ id: doc.id, ...doc.data() });
     });
     
-    console.log(`Found ${users.length} authenticated users`);
+    console.log(`Found ${users.length} users`);
     return users;
   } catch (error) {
-    console.error('Error fetching authenticated users:', error);
+    console.error('Error fetching users:', error);
     throw error;
   }
 }
@@ -85,7 +38,7 @@ async function getAuthenticatedUsers() {
 /**
  * Generate order for a specific user with date offset (months ago)
  */
-async function generateOrderForUser(userId, monthsAgo = 0) {
+export async function generateOrderForUser(userId, monthsAgo = 0) {
   // First get the user details
   try {
     const userDoc = await getDoc(doc(db, 'Users', userId));
@@ -255,7 +208,7 @@ async function generateOrderForUser(userId, monthsAgo = 0) {
       status = 'Pending';
     }
     
-    // Create order object
+    // Create order object with new structure
     const order = {
       orderId,
       userId,
@@ -266,14 +219,14 @@ async function generateOrderForUser(userId, monthsAgo = 0) {
         ...packageDetails,
         description: packageDetails.description || "Standard shipping package",
       },
-      shipping: {
-        source: sourceAddress,
-        destination: destinationAddress,
-        distance: distance, // in kilometers
-        estimatedDeliveryDays: deliveryDays,
-        estimatedArrivalDate: Timestamp.fromDate(arrivalDate),
-        arrivalDateString: `${arrivalDate.getDate().toString().padStart(2, '0')}-${(arrivalDate.getMonth() + 1).toString().padStart(2, '0')}-${arrivalDate.getFullYear()}`,
-      },
+      // New structure with direct from and to properties
+      from: sourceAddress,
+      to: destinationAddress,
+      // Keep additional shipping details
+      distance: distance, // in kilometers
+      estimatedDeliveryDays: deliveryDays,
+      estimatedArrivalDate: Timestamp.fromDate(arrivalDate),
+      arrivalDateString: `${arrivalDate.getDate().toString().padStart(2, '0')}-${(arrivalDate.getMonth() + 1).toString().padStart(2, '0')}-${arrivalDate.getFullYear()}`,
       // For display in the dashboard
       category: packageDetails.category || "Standard",
       arrival: `${deliveryDays}d - ${destinationAddress.city}`,
@@ -301,19 +254,19 @@ async function generateOrderForUser(userId, monthsAgo = 0) {
 }
 
 /**
- * Create multiple orders for each user over the past 5 months
+ * Generate orders for all users
  */
-async function generateHistoricalOrders() {
+export async function generateOrdersForAllUsers() {
   try {
-    // Get existing authenticated users
-    const users = await getAuthenticatedUsers();
+    // Get all users
+    const users = await getAllUsers();
     
     if (users.length === 0) {
-      console.log("No existing authenticated users found!");
+      console.log("No users found!");
       return { success: false, error: "No users found" };
     }
     
-    console.log(`Generating orders for ${users.length} existing users...`);
+    console.log(`Generating orders for ${users.length} users...`);
     
     const createdOrders = [];
     
@@ -342,19 +295,28 @@ async function generateHistoricalOrders() {
     return { success: true, orderCount: createdOrders.length, userCount: users.length };
     
   } catch (error) {
-    console.error("Error generating historical orders:", error);
+    console.error("Error generating orders:", error);
     return { success: false, error: error.message };
   }
 }
 
-// Run the script
-console.log("Starting order generation script...");
-generateHistoricalOrders()
-  .then(result => {
-    console.log("Order generation completed:", result);
-    process.exit(0);
-  })
-  .catch(error => {
-    console.error("Order generation failed:", error);
-    process.exit(1);
-  });
+// Run the script if called directly from Node
+// ES Module version of the check for main script
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const isMainModule = process.argv[1] === __filename;
+
+if (isMainModule) {
+  console.log("Starting order generation script...");
+  generateOrdersForAllUsers()
+    .then(result => {
+      console.log("Order generation completed:", result);
+      process.exit(0);
+    })
+    .catch(error => {
+      console.error("Order generation failed:", error);
+      process.exit(1);
+    });
+}

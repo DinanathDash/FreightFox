@@ -10,8 +10,10 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
   // Calculate the progress percentage based on order status
   const calculateProgress = (status) => {
     switch(status) {
-      case 'Processing':
+      case 'Pending': 
         return 0;
+      case 'Processing':
+        return 10;
       case 'Shipped':
         return 25;
       case 'In Transit':
@@ -20,6 +22,8 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
         return 75;
       case 'Delivered':
         return 100;
+      case 'Cancelled':
+        return 0; // Cancelled orders show no progress
       default:
         return 25; // Default to shipped
     }
@@ -38,7 +42,7 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
           <CardTitle>Shipment Tracker</CardTitle>
         </CardHeader>
         <CardContent className="p-0 pb-1">
-          <div className="h-[200px] bg-blue-50 flex items-center justify-center">
+          <div className="flex items-center justify-center">
             No shipment data available
           </div>
         </CardContent>
@@ -47,13 +51,16 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
   }
 
   // Get the origin, destination, and current location
-  // Use consistent source and destination values directly from the original order data
-  const origin = activeOrder?.shipping?.source?.city || 'Origin';
-  const destination = activeOrder?.shipping?.destination?.city || 'Destination';
+  // Support both new (from/to) and legacy (shipping.source/destination) structure
+  const origin = activeOrder?.from?.city || activeOrder?.shipping?.source?.city || 'Unknown';
+  const destination = activeOrder?.to?.city || activeOrder?.shipping?.destination?.city || 'Unknown';
+  const distance = activeOrder?.distance || 0; // Use the distance directly from the order
   const progress = calculateProgress(activeOrder.status);
-  const estimatedDelivery = activeOrder?.shipping?.estimatedArrivalDate 
-    ? new Date(activeOrder.shipping.estimatedArrivalDate).toLocaleDateString()
-    : 'Unknown';
+  const estimatedDelivery = activeOrder?.estimatedArrivalDate 
+    ? new Date(activeOrder.estimatedArrivalDate).toLocaleDateString()
+    : activeOrder?.shipping?.estimatedArrivalDate 
+      ? new Date(activeOrder.shipping.estimatedArrivalDate).toLocaleDateString()
+      : 'Unknown';
   
   return (
     <Card className="col-span-full lg:col-span-2">
@@ -72,8 +79,10 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
               <p className="text-sm font-medium text-gray-500">Status</p>
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                 activeOrder.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                activeOrder.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
+                activeOrder.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
+                activeOrder.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
                 activeOrder.status === 'Processing' ? 'bg-purple-100 text-purple-800' :
+                activeOrder.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
                 activeOrder.status === 'Out for Delivery' ? 'bg-amber-100 text-amber-800' :
                 'bg-gray-100 text-gray-800'
               }`}>
@@ -99,8 +108,8 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
             {/* Source */}
             <div className="text-center">
               <div className={`w-6 h-6 rounded-full mx-auto mb-1 ${progress >= 0 ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
-              <p className="text-xs font-medium">{origin || 'Origin'}</p>
-              <p className="text-xs text-gray-500">{activeOrder?.shipping?.source?.country}</p>
+              <p className="text-xs font-medium">{origin}</p>
+              <p className="text-xs text-gray-500">{activeOrder?.from?.state || activeOrder?.shipping?.source?.state}</p>
             </div>
             
             {/* Line */}
@@ -139,8 +148,8 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
             {/* Destination */}
             <div className="text-center">
               <div className={`w-6 h-6 rounded-full mx-auto mb-1 ${progress >= 100 ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
-              <p className="text-xs font-medium">{destination || 'Destination'}</p>
-              <p className="text-xs text-gray-500">{activeOrder?.shipping?.destination?.country}</p>
+              <p className="text-xs font-medium">{destination}</p>
+              <p className="text-xs text-gray-500">{activeOrder?.to?.state || activeOrder?.shipping?.destination?.state}</p>
             </div>
           </div>
           
@@ -148,7 +157,7 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div>
               <p className="font-medium text-gray-500">Distance</p>
-              <p className="font-semibold">{activeOrder?.shipping?.distance || '0'} km</p>
+              <p className="font-semibold">{activeOrder?.distance || activeOrder?.shipping?.distance || '0'} km</p>
             </div>
             <div>
               <p className="font-medium text-gray-500">Package Category</p>

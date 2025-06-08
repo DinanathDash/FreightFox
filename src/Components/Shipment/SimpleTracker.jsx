@@ -9,8 +9,10 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
   // Calculate the progress percentage based on order status
   const calculateProgress = (status) => {
     switch(status) {
-      case 'Processing':
+      case 'Pending': 
         return 0;
+      case 'Processing':
+        return 10;
       case 'Shipped':
         return 25;
       case 'In Transit':
@@ -19,6 +21,8 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
         return 75;
       case 'Delivered':
         return 100;
+      case 'Cancelled':
+        return 0; // Cancelled orders show no progress
       default:
         return 25; // Default to shipped
     }
@@ -37,7 +41,7 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
           <CardTitle>Shipment Tracker</CardTitle>
         </CardHeader>
         <CardContent className="p-0 pb-1">
-          <div className="h-[200px] bg-blue-50 flex items-center justify-center">
+          <div className="h-[250px] flex items-center justify-center">
             No shipment data available
           </div>
         </CardContent>
@@ -46,9 +50,11 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
   }
 
   // Get the origin, destination, and current location
-  // Use consistent source and destination values from the original order data
-  const origin = activeOrder?.shipping?.source?.city || 'Origin';
-  const destination = activeOrder?.shipping?.destination?.city || 'Destination';
+  // Support both new (from/to) and legacy (shipping.source/destination) structure
+  const origin = activeOrder?.from?.city || activeOrder?.shipping?.source?.city || 'Unknown';
+  const destination = activeOrder?.to?.city || activeOrder?.shipping?.destination?.city || 'Unknown';
+  // Use the distance directly from the order's distance field in Firebase
+  const distance = activeOrder?.distance || 0;
   const progress = calculateProgress(activeOrder.status);
   
   return (
@@ -61,21 +67,31 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
           {/* Order Info */}
           <div className="mb-4">
             <p className="text-sm font-medium text-gray-500">Order ID: <span className="font-bold text-gray-700">{activeOrder.orderId || activeOrder.id || activeOrder.trackingId}</span></p>
-            <div className="flex justify-between items-center mt-2">
-              <div>
-                <p className="text-sm font-medium text-gray-500">From</p>
-                <p className="font-semibold">{origin}, {activeOrder?.shipping?.source?.country || ''}</p>
-              </div>
-              <div className="flex-1 mx-4 h-1 bg-gray-200 relative">
+            
+            {/* Status Line - Now full width above from/to */}
+            <div className="mt-4 mb-4 w-full">
+              <div className="w-full h-1 bg-gray-200 relative">
                 <div className="h-1 bg-blue-500" style={{ width: `${progress}%` }}></div>
                 <div 
                   className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-500" 
                   style={{ left: `${progress}%`, marginLeft: '-8px' }}
                 ></div>
               </div>
+              <div className="flex justify-between mt-1">
+                <span className="text-xs text-gray-500">Order Placed</span>
+                <span className="text-xs text-gray-500">Delivered</span>
+              </div>
+            </div>
+            
+            {/* From/To information - now below the status line */}
+            <div className="flex justify-between items-center mt-4">
+              <div>
+                <p className="text-sm font-medium text-gray-500">From</p>
+                <p className="font-semibold">{origin}, {activeOrder?.from?.state || activeOrder?.shipping?.source?.state || ''}</p>
+              </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">To</p>
-                <p className="font-semibold">{destination}, {activeOrder?.shipping?.destination?.country || ''}</p>
+                <p className="font-semibold">{destination}, {activeOrder?.to?.state || activeOrder?.shipping?.destination?.state || ''}</p>
               </div>
             </div>
           </div>
@@ -87,8 +103,10 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
                 <p className="text-sm font-medium text-gray-500">Status</p>
                 <span className={`px-3 py-1 mt-1 inline-block rounded-full text-xs font-medium ${
                   activeOrder.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                  activeOrder.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
+                  activeOrder.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
+                  activeOrder.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
                   activeOrder.status === 'Processing' ? 'bg-purple-100 text-purple-800' :
+                  activeOrder.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
                   activeOrder.status === 'Out for Delivery' ? 'bg-amber-100 text-amber-800' :
                   'bg-gray-100 text-gray-800'
                 }`}>
@@ -97,7 +115,7 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Distance</p>
-                <p className="font-semibold">{activeOrder?.shipping?.distance || '0'} km</p>
+                <p className="font-semibold">{activeOrder?.distance || 0} km</p>
               </div>
               {activeOrder?.packageDetails && (
                 <>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../Context/AuthContext';
 import { getUserOrdersWithShipmentDetails } from '../../Firebase/services';
 import SimpleTracker from './SimpleTracker.jsx';
-import TimelineTracker from './TimelineTrackerIndex.js';
+import TimelineTracker from './TimelineTracker.jsx';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
