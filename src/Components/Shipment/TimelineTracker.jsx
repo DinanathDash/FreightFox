@@ -68,7 +68,7 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
         <CardTitle>Shipment Tracker</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="relative pb-8">
+        <div className="relative">
           {/* Order Status Information */}
           <div className="flex justify-between items-center mb-4">
             <div>
@@ -170,7 +170,7 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
           </div>
 
           {/* Order ID selector dropdown */}
-          <div className="absolute bottom-0 right-0">
+          <div className="mt-2 flex justify-end">
             <Select 
               value={activeTrackingId} 
               onValueChange={handleOrderChange}
@@ -178,10 +178,10 @@ function TimelineTracker({ orders, activeTrackingId, setActiveTrackingId }) {
               <SelectTrigger className="w-[180px] h-8 bg-white border border-gray-100">
                 <SelectValue placeholder="Select Order ID" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent position="popper" sideOffset={8} align="center">
                 {orders.map((order) => (
                   <SelectItem key={order.trackingId || order.id} value={order.orderId || order.id || order.trackingId}>
-                    #{order.orderId || order.id || order.trackingId}
+                    # {order.orderId || order.id || order.trackingId}
                   </SelectItem>
                 ))}
               </SelectContent>

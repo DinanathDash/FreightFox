@@ -43,15 +43,23 @@ const destinationIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-function TrackingMap({ orders, activeTrackingId, setActiveTrackingId }) {
-  // Get current active order - looking for orderId first, then fallback to trackingId
-  const activeOrder = orders.find(order => order.orderId === activeTrackingId || order.id === activeTrackingId || order.trackingId === activeTrackingId) || orders[0];
+function TrackingMap({ orders, activeTrackingId, setActiveTrackingId, shipment }) {
+  // Handle both use cases: a list of orders with an activeTrackingId, or a single shipment
   const [mapKey, setMapKey] = useState(1); // Used to force re-render the map when order changes
+  
+  // If shipment prop is provided, use it directly
+  // Otherwise, find the active order from the orders array
+  const activeOrder = shipment || 
+    (orders && orders.length > 0 && 
+      (orders.find(order => order.orderId === activeTrackingId || 
+                           order.id === activeTrackingId || 
+                           order.trackingId === activeTrackingId) || 
+       orders[0]));
 
   useEffect(() => {
     // Force re-render of map when active order changes
     setMapKey(prev => prev + 1);
-  }, [activeTrackingId]);
+  }, [activeTrackingId, shipment]);
 
   // Set up path coordinates based on order data
   const getPathCoordinates = () => {
@@ -62,33 +70,26 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId }) {
     const destination = activeOrder.to || (activeOrder.shipping?.destination);
     const currentLocation = activeOrder.currentLocation || activeOrder.shipping?.currentLocation;
     
-    // If we have source and destination coordinates
-    if (source?.coordinates && destination?.coordinates) {
-      const path = [
-        [source.coordinates.lat, source.coordinates.lng]
-      ];
-      
-      // Add current location if available
-      if (currentLocation?.coordinates) {
-        path.push([
-          currentLocation.coordinates.lat,
-          currentLocation.coordinates.lng
-        ]);
-      }
-      
-      path.push([
-        destination.coordinates.lat,
-        destination.coordinates.lng
-      ]);
-      
-      return path;
+    // Default coordinates if data is missing
+    const sourceLat = source?.coordinates?.lat || 37.7749;
+    const sourceLng = source?.coordinates?.lng || -122.4194;
+    const destLat = destination?.coordinates?.lat || 39.7392;
+    const destLng = destination?.coordinates?.lng || -104.9903;
+    const currLat = currentLocation?.coordinates?.lat;
+    const currLng = currentLocation?.coordinates?.lng;
+    
+    // Create the path with source and destination
+    const path = [[sourceLat, sourceLng]];
+    
+    // Add current location if available
+    if (currLat && currLng) {
+      path.push([currLat, currLng]);
     }
     
-    // Fallback default path
-    return [
-      [37.7749, -122.4194],
-      [39.7392, -104.9903],
-    ];
+    // Add destination
+    path.push([destLat, destLng]);
+      
+    return path;
   };
 
   // Calculate bounds for the map
@@ -109,8 +110,8 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId }) {
     setActiveTrackingId(value);
   };
 
-  // If no orders or active order, show loading state
-  if (!orders.length || !activeOrder) {
+  // If no active order, show loading state
+  if (!activeOrder) {
     return (
       <Card className="col-span-full lg:col-span-2">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -155,14 +156,15 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId }) {
             {(activeOrder?.from?.coordinates || activeOrder?.shipping?.source?.coordinates) && (
               <Marker 
                 position={[
-                  (activeOrder.from?.coordinates || activeOrder.shipping?.source?.coordinates).lat,
-                  (activeOrder.from?.coordinates || activeOrder.shipping?.source?.coordinates).lng
+                  (activeOrder.from?.coordinates?.lat || activeOrder.shipping?.source?.coordinates?.lat || 37.7749),
+                  (activeOrder.from?.coordinates?.lng || activeOrder.shipping?.source?.coordinates?.lng || -122.4194)
                 ]}
                 icon={sourceIcon}
               >
                 <Popup>
                   <div className="text-sm font-medium">
-                    Origin: {(activeOrder.from || activeOrder.shipping?.source).city}, {(activeOrder.from || activeOrder.shipping?.source).country}
+                    Origin: {(activeOrder.from?.city || activeOrder.shipping?.source?.city || "Unknown")}, 
+                    {(activeOrder.from?.country || activeOrder.shipping?.source?.country || "")}
                   </div>
                 </Popup>
               </Marker>
@@ -172,14 +174,14 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId }) {
             {(activeOrder?.currentLocation?.coordinates || activeOrder?.shipping?.currentLocation?.coordinates) && (
               <Marker 
                 position={[
-                  (activeOrder.currentLocation?.coordinates || activeOrder.shipping?.currentLocation?.coordinates).lat,
-                  (activeOrder.currentLocation?.coordinates || activeOrder.shipping?.currentLocation?.coordinates).lng
+                  (activeOrder.currentLocation?.coordinates?.lat || activeOrder.shipping?.currentLocation?.coordinates?.lat || 38.5),
+                  (activeOrder.currentLocation?.coordinates?.lng || activeOrder.shipping?.currentLocation?.coordinates?.lng || -117.5)
                 ]}
                 icon={currentIcon}
               >
                 <Popup>
                   <div className="text-sm font-medium">
-                    Current Location: {(activeOrder.currentLocation || activeOrder.shipping?.currentLocation).city || 'In Transit'}
+                    Current Location: {(activeOrder.currentLocation?.city || activeOrder.shipping?.currentLocation?.city || 'In Transit')}
                   </div>
                 </Popup>
               </Marker>
@@ -189,38 +191,41 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId }) {
             {(activeOrder?.to?.coordinates || activeOrder?.shipping?.destination?.coordinates) && (
               <Marker 
                 position={[
-                  (activeOrder.to?.coordinates || activeOrder.shipping?.destination?.coordinates).lat,
-                  (activeOrder.to?.coordinates || activeOrder.shipping?.destination?.coordinates).lng
+                  (activeOrder.to?.coordinates?.lat || activeOrder.shipping?.destination?.coordinates?.lat || 39.7392),
+                  (activeOrder.to?.coordinates?.lng || activeOrder.shipping?.destination?.coordinates?.lng || -104.9903)
                 ]}
                 icon={destinationIcon}
               >
                 <Popup>
                   <div className="text-sm font-medium">
-                    Destination: {(activeOrder.to || activeOrder.shipping?.destination).city}, {(activeOrder.to || activeOrder.shipping?.destination).country}
+                    Destination: {(activeOrder.to?.city || activeOrder.shipping?.destination?.city || "Unknown")}, 
+                    {(activeOrder.to?.country || activeOrder.shipping?.destination?.country || "")}
                   </div>
                 </Popup>
               </Marker>
             )}
           </MapContainer>
           
-          {/* Order ID selector dropdown using shadcn/ui Select */}
-          <div className="absolute bottom-3 right-3 z-[1000]">
-            <Select 
-              value={activeTrackingId} 
-              onValueChange={handleOrderChange}
-            >
-              <SelectTrigger className="w-[180px] h-8 bg-white border border-gray-100">
-                <SelectValue placeholder="Select Order ID" />
-              </SelectTrigger>
-              <SelectContent>
-                {orders.map((order) => (
-                  <SelectItem key={order.trackingId || order.id} value={order.orderId || order.id || order.trackingId}>
-                    #{order.orderId || order.id || order.trackingId}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Order ID selector dropdown using shadcn/ui Select - only show when we have multiple orders */}
+          {orders && orders.length > 0 && setActiveTrackingId && (
+            <div className="absolute bottom-3 right-3 z-[1000]">
+              <Select 
+                value={activeTrackingId} 
+                onValueChange={handleOrderChange}
+              >
+                <SelectTrigger className="w-[180px] h-8 bg-white border border-gray-100">
+                  <SelectValue placeholder="Select Order ID" />
+                </SelectTrigger>
+                <SelectContent>
+                  {orders.map((order) => (
+                    <SelectItem key={order.trackingId || order.id || ""} value={order.orderId || order.id || order.trackingId || ""}>
+                      #{order.orderId || order.id || order.trackingId || ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

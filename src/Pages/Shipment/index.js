@@ -1,2 +1,2 @@
-import UserOrdersList from '../../Components/Shipment/UserOrdersList';
-export default UserOrdersList;
+import ShipmentPage from './ShipmentPage';
+export default ShipmentPage;

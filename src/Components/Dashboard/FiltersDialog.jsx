@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,11 +10,13 @@ import {
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 
-const FiltersDialog = ({ open, onClose, onApply }) => {
+const FiltersDialog = ({ open, onOpenChange, onFiltersChange, currentFilters = {} }) => {
   const [statusFilters, setStatusFilters] = useState({
     Pending: false,
     Processing: false,
-    Shipping: false,
+    Shipped: false,
+    "In Transit": false,
+    "Out for Delivery": false,
     Delivered: false,
     Cancelled: false,
   });
@@ -27,42 +29,64 @@ const FiltersDialog = ({ open, onClose, onApply }) => {
     Other: false,
   });
 
+  // Update state when currentFilters change
+  useEffect(() => {
+    if (currentFilters.status) {
+      setStatusFilters(prev => ({
+        ...Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
+        [currentFilters.status]: true
+      }));
+    }
+    
+    if (currentFilters.category) {
+      setCategoryFilters(prev => ({
+        ...Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
+        [currentFilters.category]: true
+      }));
+    }
+  }, [currentFilters]);
+
   const handleStatusChange = (status) => {
-    setStatusFilters((prev) => ({
-      ...prev,
-      [status]: !prev[status],
-    }));
+    setStatusFilters((prev) => {
+      // Create a new object with all values set to false
+      const newState = Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {});
+      // Only set the clicked status to its toggled value
+      return { ...newState, [status]: !prev[status] };
+    });
   };
 
   const handleCategoryChange = (category) => {
-    setCategoryFilters((prev) => ({
-      ...prev,
-      [category]: !prev[category],
-    }));
+    setCategoryFilters((prev) => {
+      // Create a new object with all values set to false
+      const newState = Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {});
+      // Only set the clicked category to its toggled value
+      return { ...newState, [category]: !prev[category] };
+    });
   };
 
   const handleApply = () => {
-    const activeStatusFilters = Object.entries(statusFilters)
-      .filter(([_, isChecked]) => isChecked)
-      .map(([status]) => status);
+    // Get the first selected status and category
+    const selectedStatus = Object.entries(statusFilters)
+      .find(([_, isChecked]) => isChecked)?.[0] || null;
 
-    const activeCategoryFilters = Object.entries(categoryFilters)
-      .filter(([_, isChecked]) => isChecked)
-      .map(([category]) => category);
+    const selectedCategory = Object.entries(categoryFilters)
+      .find(([_, isChecked]) => isChecked)?.[0] || null;
 
-    onApply({
-      status: activeStatusFilters.length > 0 ? activeStatusFilters : null,
-      category: activeCategoryFilters.length > 0 ? activeCategoryFilters : null,
+    onFiltersChange({
+      status: selectedStatus,
+      category: selectedCategory
     });
     
-    onClose();
+    onOpenChange(false);
   };
 
   const handleReset = () => {
     setStatusFilters({
       Pending: false,
       Processing: false,
-      Shipping: false,
+      Shipped: false,
+      "In Transit": false,
+      "Out for Delivery": false,
       Delivered: false,
       Cancelled: false,
     });
@@ -74,13 +98,15 @@ const FiltersDialog = ({ open, onClose, onApply }) => {
       Books: false,
       Other: false,
     });
+    
+    onFiltersChange({ status: null, category: null });
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Filter Orders</DialogTitle>
+          <DialogTitle>Filter Shipments</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
@@ -128,9 +154,7 @@ const FiltersDialog = ({ open, onClose, onApply }) => {
         <DialogFooter className="flex justify-between">
           <Button variant="outline" onClick={handleReset}>Reset</Button>
           <div className="space-x-2">
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button onClick={handleApply}>Apply</Button>
           </div>
         </DialogFooter>

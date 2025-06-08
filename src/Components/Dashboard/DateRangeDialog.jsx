@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -9,61 +9,132 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar"; // Import the Calendar component
-import { format } from "date-fns"; // Make sure date-fns is installed
+import { format, addDays } from "date-fns"; // Make sure date-fns is installed
+import { toast } from "sonner";
 
-const DateRangeDialog = ({ open, onClose, onApply }) => {
+const DateRangeDialog = ({ open, onOpenChange, onDateRangeChange }) => {
   const [date, setDate] = useState({
     from: new Date(),
-    to: new Date(),
+    to: addDays(new Date(), 7), // Default to a week range
   });
+  
+  // Reset date selection when dialog opens
+  useEffect(() => {
+    if (open) {
+      const today = new Date();
+      setDate({
+        from: today,
+        to: addDays(today, 7)
+      });
+    }
+  }, [open]);
 
   const handleApply = () => {
     if (date && date.from) {
-      onApply(date.from, date.to || date.from);
-      onClose();
+      // Ensure we have both start and end dates
+      if (!date.to) {
+        // If only start date is selected, use it as both start and end
+        const startDate = new Date(date.from);
+        startDate.setHours(0, 0, 0, 0);
+        
+        const endDate = new Date(date.from);
+        endDate.setHours(23, 59, 59, 999);
+        
+        console.log("Applying single-day date range:", {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString()
+        });
+        
+        onDateRangeChange({ 
+          startDate: startDate, 
+          endDate: endDate 
+        });
+        onOpenChange(false);
+        return;
+      }
+      
+      // Create copies of dates and set time to beginning/end of day for proper filtering
+      const startDate = new Date(date.from);
+      startDate.setHours(0, 0, 0, 0);
+      
+      const endDate = new Date(date.to);
+      endDate.setHours(23, 59, 59, 999);
+      
+      console.log("Applying date range:", {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+      });
+      
+      onDateRangeChange({ 
+        startDate: startDate, 
+        endDate: endDate 
+      });
+      onOpenChange(false);
+    } else {
+      console.warn("No start date selected");
+      // Use current date as fallback
+      const currentDate = new Date();
+      const startDate = new Date(currentDate);
+      startDate.setHours(0, 0, 0, 0);
+      
+      const endDate = new Date(currentDate);
+      endDate.setHours(23, 59, 59, 999);
+      
+      onDateRangeChange({ 
+        startDate: startDate, 
+        endDate: endDate 
+      });
+      onOpenChange(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle>Select Date Range</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="flex flex-col space-y-2 p-2">
-            <div className="grid gap-2">
-              <div className="flex flex-col space-y-1.5">
-                <div className="flex justify-center">
-                  <Calendar
-                    mode="range"
-                    defaultMonth={date?.from || new Date()}
-                    selected={date}
-                    onSelect={(newDate) => setDate(newDate || { from: new Date(), to: new Date() })}
-                    numberOfMonths={1}
-                    className="rounded-md border shadow"
-                  />
-                </div>
-              </div>
-            </div>
-            {date && date.from && (
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <div className="py-1 px-2 rounded bg-blue-50 text-blue-800">
-                  {format(date.from, "PPP")}
-                </div>
-                <span>to</span>
-                <div className="py-1 px-2 rounded bg-blue-50 text-blue-800">
-                  {date.to ? format(date.to, "PPP") : format(date.from, "PPP")}
-                </div>
-              </div>
-            )}
+        
+        <div className="flex flex-col items-center py-2">
+          <Calendar
+            mode="range"
+            defaultMonth={date?.from || new Date()}
+            selected={date}
+            onSelect={setDate}
+            numberOfMonths={1}
+            className="mx-auto"
+          />
+        </div>
+        
+        <div className="flex justify-between items-center border-t pt-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Start date</p>
+            <p className="text-sm font-medium">
+              {date?.from ? format(date.from, "PPP") : "Pick a date"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">End date</p>
+            <p className="text-sm font-medium">
+              {date?.to ? format(date.to, "PPP") : "Pick a date"}
+            </p>
           </div>
         </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <Button onClick={handleApply}>Apply</Button>
+        
+        <DialogFooter className="flex justify-between pt-4">
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              onDateRangeChange(null); // Clear the date filter
+              onOpenChange(false);
+              toast.success("Date filter cleared");
+            }}>
+            Reset
+          </Button>
+          <div className="space-x-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button onClick={handleApply}>Apply</Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

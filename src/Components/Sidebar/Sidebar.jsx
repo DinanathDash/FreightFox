@@ -3,11 +3,36 @@ import { useAuth } from '../../Context/AuthContext';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../../assets/Logo.svg';
 import Logo1 from '../../assets/logo1.svg';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose
+} from '../ui/dialog';
 
 function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(true);
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const location = useLocation();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  
+  const openLogoutDialog = () => {
+    setShowLogoutDialog(true);
+  };
+  
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setShowLogoutDialog(false);
+    } catch (error) {
+      toast.error("Failed to log out");
+    }
+  };
 
   const mainNavItems = [
     { 
@@ -35,39 +60,6 @@ function Sidebar() {
         </svg>
       ),
       path: '/shipments'
-    },
-    { 
-      label: 'Orders', 
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3.16992 7.44L11.9999 12.55L20.7699 7.46997" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M12 21.61V12.54" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M9.93011 2.48L4.59012 5.45003C3.38012 6.12003 2.39014 7.80001 2.39014 9.18001V14.83C2.39014 16.21 3.38012 17.89 4.59012 18.56L9.93011 21.53C11.0701 22.16 12.9401 22.16 14.0801 21.53L19.4201 18.56C20.6301 17.89 21.6201 16.21 21.6201 14.83V9.18001C21.6201 7.80001 20.6301 6.12003 19.4201 5.45003L14.0801 2.48C12.9301 1.84 11.0701 1.84 9.93011 2.48Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      ),
-      path: '/orders'
-    },
-    { 
-      label: 'Messages', 
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M22 6.25V11.35C22 12.62 21.58 13.69 20.83 14.43C20.09 15.18 19.02 15.6 17.75 15.6V17.41C17.75 18.09 16.99 18.5 16.43 18.12L15.46 17.48C15.55 17.17 15.59 16.83 15.59 16.47V12.4C15.59 10.36 14.23 9 12.19 9H5.39999C5.25999 9 5.13 9.01 5 9.02V6.25C5 3.7 6.7 2 9.25 2H17.75C20.3 2 22 3.7 22 6.25Z" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M15.59 12.4V16.47C15.59 16.83 15.55 17.17 15.46 17.48C15.09 18.58 14.07 19.19 12.19 19.19H9.47L6.45 21.19C6 21.5 5.39999 21.16 5.39999 20.62V19.19C4.14999 19.19 3.09 18.78 2.35 18.04C1.6 17.29 1.19 16.23 1.19 14.97V12.4C1.19 10.36 2.54999 9.01001 4.59 9.01001C4.72 9.00001 4.85 9 5 9H12.19C14.23 9 15.59 10.36 15.59 12.4Z" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      ),
-      path: '/messages'
-    },
-    { 
-      label: 'Customers', 
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9.16006 10.87C9.06006 10.86 8.94006 10.86 8.83006 10.87C6.45006 10.79 4.56006 8.84 4.56006 6.44C4.56006 3.99 6.54006 2 9.00006 2C11.4501 2 13.4401 3.99 13.4401 6.44C13.4301 8.84 11.5401 10.79 9.16006 10.87Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M16.41 4C18.35 4 19.91 5.57 19.91 7.5C19.91 9.39 18.41 10.93 16.54 11C16.46 10.99 16.37 10.99 16.28 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M4.15997 14.56C1.73997 16.18 1.73997 18.82 4.15997 20.43C6.90997 22.27 11.42 22.27 14.17 20.43C16.59 18.81 16.59 16.17 14.17 14.56C11.43 12.73 6.91997 12.73 4.15997 14.56Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M18.34 20C19.06 19.85 19.74 19.56 20.3 19.13C21.86 17.96 21.86 16.03 20.3 14.86C19.75 14.44 19.08 14.16 18.37 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      ),
-      path: '/customers'
     }
   ];
   
@@ -104,6 +96,17 @@ function Sidebar() {
         </svg>
       ),
       path: '/settings'
+    },
+    {
+      label: 'Sign Out',
+      onClick: openLogoutDialog,
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.90002 7.56001C9.21002 3.96001 11.06 2.49001 15.11 2.49001H15.24C19.71 2.49001 21.5 4.28001 21.5 8.75001V15.27C21.5 19.74 19.71 21.53 15.24 21.53H15.11C11.09 21.53 9.24002 20.08 8.91002 16.54" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M15 12H3.62" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M5.85 8.65002L2.5 12L5.85 15.35" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
     }
   ];
 
@@ -152,7 +155,26 @@ function Sidebar() {
 
         <nav className="mb-auto">
           {managementNavItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = item.path && location.pathname === item.path;
+            
+            // Render as button if it has onClick handler
+            if (item.onClick) {
+              return (
+                <button
+                  key={item.label}
+                  onClick={item.onClick}
+                  className={`flex items-center w-full px-4 py-3 ${isExpanded ? 'justify-start' : 'justify-center'} 
+                    text-gray-600 hover:bg-gray-50`}
+                >
+                  <div className="text-gray-500">
+                    {item.icon}
+                  </div>
+                  {isExpanded && <span className="ml-3 font-medium">{item.label}</span>}
+                </button>
+              );
+            }
+            
+            // Render as Link for navigation items
             return (
               <Link
                 key={item.label}
@@ -192,6 +214,26 @@ function Sidebar() {
           />
         </svg>
       </button>
+      
+      {/* Logout Confirmation Dialog */}
+      <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Sign Out</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to sign out? Your session will be terminated.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button variant="default" onClick={handleLogout}>
+              Sign Out
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

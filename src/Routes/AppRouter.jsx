@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { useAuth } from '../Context/AuthContext';
 import AuthForm from '../Components/Auth/AuthForm';
 import DashboardPage from '../Pages/Dashboard/DashboardPage';
+import ShipmentPage from '../Pages/Shipment';
 import SessionTimeout from '../Components/Auth/SessionTimeout';
 import SessionExpiryModal from '../Components/Auth/SessionExpiryModal';
 
@@ -43,34 +44,11 @@ function AppRouter() {
           path="/shipments"
           element={
             <PrivateRoute>
-              <DashboardPage />
+              <ShipmentPage />
             </PrivateRoute>
           }
         />
-        <Route
-          path="/orders"
-          element={
-            <PrivateRoute>
-              <DashboardPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/messages"
-          element={
-            <PrivateRoute>
-              <DashboardPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/customers"
-          element={
-            <PrivateRoute>
-              <DashboardPage />
-            </PrivateRoute>
-          }
-        />
+
         <Route
           path="/help"
           element={
