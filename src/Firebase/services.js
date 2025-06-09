@@ -8,7 +8,10 @@ import {
   doc, 
   orderBy, 
   limit,
-  Timestamp 
+  Timestamp,
+  addDoc,
+  serverTimestamp,
+  updateDoc
 } from 'firebase/firestore';
 import { enhanceOrderWithCoordinates } from './locationUtils.js';
 
@@ -544,6 +547,154 @@ export async function getOrdersByDateRange(userId = null, startDate, endDate) {
     return orders;
   } catch (error) {
     console.error('Error fetching orders by date range:', error);
+    throw error;
+  }
+}
+
+// Create a new support ticket in Firebase
+export async function createSupportTicket(ticketData) {
+  try {
+    // Prepare ticket data with proper timestamp
+    const ticket = {
+      ...ticketData,
+      createdAt: serverTimestamp(),
+      lastUpdated: serverTimestamp(),
+      status: ticketData.status || 'pending', // Default status if not provided
+      replies: []
+    };
+    
+    // Add the ticket to the Tickets collection
+    const docRef = await addDoc(collection(db, 'Tickets'), ticket);
+    
+    // Return the ticket with its generated ID
+    return {
+      id: docRef.id,
+      ...ticket,
+      createdAt: new Date(), // Convert to JS Date for immediate use in UI
+      lastUpdated: new Date()
+    };
+  } catch (error) {
+    console.error('Error creating ticket:', error);
+    throw error;
+  }
+}
+
+// Get all tickets for a specific user
+export async function getTicketsByUserId(userId) {
+  try {
+    console.log('Fetching tickets for user ID:', userId);
+    // First try with the compound query that requires an index
+    try {
+      const q = query(
+        collection(db, 'Tickets'),
+        where('userId', '==', userId),
+        orderBy('createdAt', 'desc')
+      );
+      
+      console.log('Executing Firestore query for tickets with index...');
+      const querySnapshot = await getDocs(q);
+      console.log('Query returned', querySnapshot.size, 'tickets');
+      
+      const tickets = [];
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log('Ticket found:', doc.id, data);
+        tickets.push({ id: doc.id, ...data });
+      });
+      
+      return tickets;
+    } catch (indexError) {
+      console.warn('Index error, falling back to simple query:', indexError.message);
+      
+      // If the index doesn't exist, fall back to a simple query without ordering
+      const simpleQ = query(
+        collection(db, 'Tickets'),
+        where('userId', '==', userId)
+      );
+      
+      console.log('Executing fallback Firestore query for tickets...');
+      const querySnapshot = await getDocs(simpleQ);
+      console.log('Fallback query returned', querySnapshot.size, 'tickets');
+      
+      const tickets = [];
+      
+      querySnapshot.forEach((doc) => {
+        tickets.push({ id: doc.id, ...doc.data() });
+      });
+      
+      // Sort in memory as a fallback
+      tickets.sort((a, b) => {
+        const aDate = a.createdAt instanceof Timestamp ? 
+          a.createdAt.toDate().getTime() : 
+          (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+          
+        const bDate = b.createdAt instanceof Timestamp ? 
+          b.createdAt.toDate().getTime() : 
+          (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+          
+        return bDate - aDate; // Sort descending (newest first)
+      });
+      
+      return tickets;
+    }
+  } catch (error) {
+    console.error('Error fetching tickets:', error);
+    throw error;
+  }
+}
+
+// Get a specific ticket by ID
+export async function getTicketById(ticketId) {
+  try {
+    const ticketRef = doc(db, 'Tickets', ticketId);
+    const ticketSnap = await getDoc(ticketRef);
+    
+    if (ticketSnap.exists()) {
+      return { id: ticketSnap.id, ...ticketSnap.data() };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching ticket:', error);
+    throw error;
+  }
+}
+
+// Add a reply to an existing ticket
+export async function addTicketReply(ticketId, replyData) {
+  try {
+    const ticketRef = doc(db, 'Tickets', ticketId);
+    const ticketSnap = await getDoc(ticketRef);
+    
+    if (!ticketSnap.exists()) {
+      throw new Error('Ticket not found');
+    }
+    
+    const ticketData = ticketSnap.data();
+    const replies = ticketData.replies || [];
+    
+    // Add the new reply
+    const newReply = {
+      ...replyData,
+      timestamp: serverTimestamp(),
+      id: `reply-${Date.now()}`
+    };
+    
+    // Update the ticket with the new reply and update lastUpdated timestamp
+    await updateDoc(ticketRef, {
+      replies: [...replies, newReply],
+      lastUpdated: serverTimestamp(),
+      status: 'open' // When user replies, change status to 'open'
+    });
+    
+    // Return the created reply with the timestamp as a JS Date for immediate use
+    return {
+      ...newReply,
+      timestamp: new Date()
+    };
+  } catch (error) {
+    console.error('Error adding reply:', error);
     throw error;
   }
 }

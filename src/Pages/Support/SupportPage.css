@@ -1,0 +1,64 @@
+.support-contact-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.support-contact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Fix for white space issue at bottom of tabs */
+[data-value="support-ticket"] {
+  display: flex;
+  flex-direction: column;
+  min-height: auto;
+}
+
+.ticket-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.status-open {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.status-resolved {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.status-closed {
+  background-color: #F3F4F6;
+  color: #4B5563;
+}
+
+/* Additional styles to fix white space issue */
+.tabs-content {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.form-container {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Fix for tab content layout */
+[role="tabpanel"] {
+  margin-bottom: 0;
+}
+
+/* Ensure card content doesn't create extra whitespace */
+.card-content {
+  padding-bottom: 1.5rem;
+}

@@ -267,14 +267,35 @@ function CreateShipmentDialog({ open, onOpenChange }) {
       // When component unmounts, clean up Razorpay instance if it exists
       if (razorpayInstanceRef.current) {
         try {
-          // Attempt to close Razorpay if it's still open
+          // Remove the overlay if it exists
+          if (razorpayInstanceRef.current.overlay) {
+            razorpayInstanceRef.current.overlay.remove();
+          }
+          
+          // Close any active Razorpay frame
           razorpayInstanceRef.current.close();
+          
+          // Reset dialog z-index
+          const dialogs = document.querySelectorAll('[role="dialog"]');
+          dialogs.forEach(dialog => {
+            dialog.style.zIndex = '';
+          });
+          
+          // Clear reference
+          razorpayInstanceRef.current = null;
+          
+          // Clean up any orphaned iframes
+          const razorpayFrames = document.querySelectorAll('iframe[src*="api.razorpay.com"]');
+          razorpayFrames.forEach(frame => {
+            try {
+              frame.remove();
+            } catch (e) {
+              console.error("Error removing Razorpay frame:", e);
+            }
+          });
         } catch (error) {
           console.error("Error closing Razorpay instance:", error);
         }
-        
-        // Clear the reference
-        razorpayInstanceRef.current = null;
       }
     };
   }, []);
@@ -362,7 +383,26 @@ function CreateShipmentDialog({ open, onOpenChange }) {
   const handlePayment = async () => {
     try {
       setLoading(true);
-      const orderResponse = await createRazorpayOrder(price.cost.totalAmount);
+      
+      // Load Razorpay script first
+      const isScriptLoaded = await loadRazorpayScript();
+      if (!isScriptLoaded) {
+        throw new Error('Failed to load Razorpay script');
+      }
+
+      const orderData = {
+        amount: parseFloat(price.cost.totalAmount),
+        notes: {
+          fromCity: formData.fromCity,
+          toCity: formData.toCity,
+          weight: formData.weight,
+          packageType: formData.packageSize,
+          serviceType: formData.serviceType
+        }
+      };
+      const orderResponse = await createRazorpayOrder(orderData);
+      
+      // Clean Razorpay options with no duplicates
       const options = {
         key: await getRazorpayKey(),
         amount: orderResponse.amount,
@@ -385,6 +425,12 @@ function CreateShipmentDialog({ open, onOpenChange }) {
           backdropclose: false,
           animation: true,
           ondismiss: () => {
+            // Remove overlay when Razorpay is dismissed
+            if (razorpayInstanceRef.current?.overlay) {
+              razorpayInstanceRef.current.overlay.remove();
+            }
+            // No need to modify dialog z-index anymore
+            
             // Reset payment state when modal is dismissed
             setRazorpayActive(false);
             setPaymentStatus('idle');
@@ -400,8 +446,11 @@ function CreateShipmentDialog({ open, onOpenChange }) {
       // Set Razorpay active state before opening the modal
       setRazorpayActive(true);
 
+      // Create new Razorpay instance
       const rzp = new window.Razorpay(options);
-      rzp.open();
+      
+      // Store reference to allow updates
+      razorpayInstanceRef.current = rzp;
 
       // Add event listeners for modal state
       rzp.on('payment.failed', function(response) {
@@ -409,6 +458,24 @@ function CreateShipmentDialog({ open, onOpenChange }) {
         setPaymentStatus('error');
         setPaymentError(response.error.description);
       });
+
+      // Create a simple overlay that will be removed when Razorpay opens
+      // This prevents interaction with our dialog while Razorpay loads
+      const overlay = document.createElement('div');
+      overlay.className = 'razorpay-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.inset = '0';
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+      overlay.style.zIndex = '9998'; // Set z-index lower than Razorpay's default
+      document.body.appendChild(overlay);
+      
+      // Store reference to overlay for cleanup
+      razorpayInstanceRef.current.overlay = overlay;
+      
+      // Open the payment modal after setting up the overlay
+      rzp.open();
 
     } catch (error) {
       console.error('Payment initialization error:', error);
@@ -632,8 +699,12 @@ function CreateShipmentDialog({ open, onOpenChange }) {
     const razorpayFrames = document.querySelectorAll('iframe[src*="api.razorpay.com"]');
     
     if (razorpayFrames.length > 0) {
-      // Razorpay is loaded, but check if it's visible
+      // Razorpay is loaded, get the frame
       const frame = razorpayFrames[0];
+      
+      // Don't modify the Razorpay iframe z-index - let Razorpay handle it
+      // Only check for visibility
+
       const rect = frame.getBoundingClientRect();
       
       // Check if frame is hidden or outside viewport
@@ -670,35 +741,52 @@ function CreateShipmentDialog({ open, onOpenChange }) {
           duration: 5000
         });
         
-        // Try to bring the frame forward
-        if (frame) {
-          try {
-            frame.style.zIndex = 10000;
-          } catch (e) {
-            console.error("Could not modify frame z-index:", e);
-          }
-        }
+        // We no longer try to modify the iframe's z-index
+        // Let Razorpay handle its own rendering
       }
     }, 2000);
     
     return () => clearInterval(intervalId);
   }, [razorpayActive, paymentStatus]);
   
+  // Handle Razorpay test mode overlay to ensure it doesn't block interaction
+  useEffect(() => {
+    // Only run when Razorpay is active
+    if (!razorpayActive) return;
+    
+    // Give time for Razorpay to render its elements
+    const timeoutId = setTimeout(() => {
+      const testModeOverlay = document.querySelector('.razorpay-test-mode-overlay');
+      if (testModeOverlay) {
+        // Make sure test mode overlay doesn't block pointer events
+        // This allows clicking through it to the payment options
+        testModeOverlay.style.pointerEvents = 'none';
+        
+        // Force any inner element's pointer events to be enabled
+        const testModeText = document.querySelector('.razorpay-test-mode-text');
+        if (testModeText) {
+          testModeText.style.pointerEvents = 'none';
+        }
+        
+        console.log('Fixed Razorpay test mode overlay interaction');
+      }
+    }, 1000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [razorpayActive]);
+
   return (
     <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogContent 
         className={cn(
           "w-full max-w-4xl",
           "max-h-[85vh] overflow-y-auto",
-          razorpayActive && "pointer-events-none"
+          // When Razorpay is active, disable pointer events and adjust z-index
+          razorpayActive && "pointer-events-none relative"
         )}
         style={{
-          ...(razorpayActive && dialogPosition && {
-            position: 'fixed',
-            left: dialogPosition.x + 'px',
-            top: dialogPosition.y + 'px',
-            transform: 'none'
-          })
+          // When Razorpay is active, ensure dialog has a lower z-index
+          ...(razorpayActive ? { zIndex: "100" } : {})
         }}
       >
         {/* Add draggable handle when Razorpay is active */}
@@ -716,14 +804,16 @@ function CreateShipmentDialog({ open, onOpenChange }) {
               </span>
             )}
           </DialogTitle>
-          <DialogDescription>
-            Enter shipment details and process payment to create a new shipment
+          <div className="space-y-2">
+            <DialogDescription>
+              Enter shipment details and process payment to create a new shipment
+            </DialogDescription>
             {razorpayActive && (
-              <div className="mt-2 text-sm font-medium text-amber-600 bg-amber-50 p-2 rounded-md border border-amber-200">
+              <div className="text-sm font-medium text-amber-600 bg-amber-50 p-2 rounded-md border border-amber-200">
                 Payment window is open. Please complete or cancel the payment before closing this dialog.
               </div>
             )}
-          </DialogDescription>
+          </div>
         </DialogHeader>
         
         {/* Show recovery alert if there's a saved payment session */}

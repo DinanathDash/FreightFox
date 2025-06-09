@@ -11,7 +11,11 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: true }));
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
@@ -22,13 +26,16 @@ const razorpay = new Razorpay({
 // Create an order with Razorpay
 app.post('/api/create-order', async (req, res) => {
   try {
-    const { amount, currency = 'INR', receipt, notes } = req.body;
+    const amount = parseFloat(req.body.amount || req.body);
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
     
     const options = {
       amount: Math.round(amount * 100), // convert to paise
-      currency,
-      receipt,
-      notes,
+      currency: 'INR',
+      receipt: `receipt_${Date.now()}`,
+      notes: req.body.notes || {},
     };
     
     const order = await razorpay.orders.create(options);

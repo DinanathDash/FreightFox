@@ -14,6 +14,7 @@ export const createRazorpayOrder = async (orderData) => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(orderData),
     });
 

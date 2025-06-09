@@ -195,7 +195,7 @@ function Sidebar() {
       {/* Floating collapse button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute -right-3 top-16 bg-white shadow-md rounded-full p-1.5 hover:bg-gray-50 transform transition-transform z-50"
+        className="absolute -right-3 top-15 bg-white shadow-md rounded-full p-1.5 hover:bg-gray-50 transform transition-transform z-50"
         aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         <svg

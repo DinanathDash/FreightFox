@@ -7,6 +7,7 @@ import { db, auth } from './sharedConfig.js';
 import { 
   collection, 
   getDocs, 
+  getDoc,
   setDoc,
   doc,
   serverTimestamp,

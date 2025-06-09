@@ -3,6 +3,8 @@ import { useAuth } from '../Context/AuthContext';
 import AuthForm from '../Components/Auth/AuthForm';
 import DashboardPage from '../Pages/Dashboard/DashboardPage';
 import ShipmentPage from '../Pages/Shipment';
+import HelpPage from '../Pages/Help';
+import SupportPage from '../Pages/Support';
 import SessionTimeout from '../Components/Auth/SessionTimeout';
 import SessionExpiryModal from '../Components/Auth/SessionExpiryModal';
 
@@ -53,7 +55,7 @@ function AppRouter() {
           path="/help"
           element={
             <PrivateRoute>
-              <DashboardPage />
+              <HelpPage />
             </PrivateRoute>
           }
         />
@@ -61,7 +63,7 @@ function AppRouter() {
           path="/support"
           element={
             <PrivateRoute>
-              <DashboardPage />
+              <SupportPage />
             </PrivateRoute>
           }
         />
