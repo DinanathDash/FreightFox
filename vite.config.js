@@ -11,4 +11,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    target: 'es2020', // Ensure we're targeting a compatible version
+    rollupOptions: {
+      external: ['path', 'fs', 'crypto', 'os'] // Mark Node.js builtin modules as external
+    }
+  }
 })

@@ -11,14 +11,22 @@ import { getFunctions } from "firebase/functions";
 const isBrowser = typeof window !== 'undefined';
 
 // Load environment variables from .env file in Node.js environment
-if (!isBrowser) {
-  try {
-    // Use dynamic import for ESM compatibility
-    const dotenvModule = await import('dotenv');
-    dotenvModule.config();
-  } catch (error) {
-    console.log('dotenv not available, continuing without it');
+// Using a function to avoid top-level await
+async function loadDotEnv() {
+  if (!isBrowser) {
+    try {
+      // Use dynamic import for ESM compatibility
+      const dotenvModule = await import('dotenv');
+      dotenvModule.config();
+    } catch (error) {
+      console.log('dotenv not available, continuing without it');
+    }
   }
+}
+
+// Execute but don't await at the top level
+if (!isBrowser) {
+  loadDotEnv().catch(err => console.error('Error loading dotenv:', err));
 }
 
 // Get config based on environment
