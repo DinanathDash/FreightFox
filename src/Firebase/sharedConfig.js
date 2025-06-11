@@ -5,6 +5,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getFunctions } from "firebase/functions";
 
 // Check if running in browser or Node environment
 const isBrowser = typeof window !== 'undefined';
@@ -12,9 +13,9 @@ const isBrowser = typeof window !== 'undefined';
 // Load environment variables from .env file in Node.js environment
 if (!isBrowser) {
   try {
-    import('dotenv').then(dotenv => {
-      dotenv.config();
-    });
+    // Use dynamic import for ESM compatibility
+    const dotenvModule = await import('dotenv');
+    dotenvModule.config();
   } catch (error) {
     console.log('dotenv not available, continuing without it');
   }
@@ -58,5 +59,6 @@ const firebaseConfig = getFirebaseConfig();
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const functions = getFunctions(app);
 
-export default { auth, db };
+export default { auth, db, functions };

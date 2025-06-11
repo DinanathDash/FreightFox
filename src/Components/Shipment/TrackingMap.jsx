@@ -43,23 +43,22 @@ const destinationIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-function TrackingMap({ orders, activeTrackingId, setActiveTrackingId, shipment }) {
-  // Handle both use cases: a list of orders with an activeTrackingId, or a single shipment
+function TrackingMap({ orders, activeTrackingId: activeOrderId, setActiveTrackingId: setActiveOrderId, shipment }) {
+  // Handle both use cases: a list of orders with an activeOrderId, or a single shipment
   const [mapKey, setMapKey] = useState(1); // Used to force re-render the map when order changes
   
   // If shipment prop is provided, use it directly
   // Otherwise, find the active order from the orders array
   const activeOrder = shipment || 
     (orders && orders.length > 0 && 
-      (orders.find(order => order.orderId === activeTrackingId || 
-                           order.id === activeTrackingId || 
-                           order.trackingId === activeTrackingId) || 
+      (orders.find(order => order.orderId === activeOrderId || 
+                           order.id === activeOrderId) || 
        orders[0]));
 
   useEffect(() => {
     // Force re-render of map when active order changes
     setMapKey(prev => prev + 1);
-  }, [activeTrackingId, shipment]);
+  }, [activeOrderId, shipment]);
 
   // Set up path coordinates based on order data
   const getPathCoordinates = () => {
@@ -107,7 +106,7 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId, shipment }
 
   // Handle order selection change
   const handleOrderChange = (value) => {
-    setActiveTrackingId(value);
+    setActiveOrderId(value);
   };
 
   // If no active order, show loading state
@@ -207,10 +206,10 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId, shipment }
           </MapContainer>
           
           {/* Order ID selector dropdown using shadcn/ui Select - only show when we have multiple orders */}
-          {orders && orders.length > 0 && setActiveTrackingId && (
+          {orders && orders.length > 0 && setActiveOrderId && (
             <div className="absolute bottom-3 right-3 z-[1000]">
               <Select 
-                value={activeTrackingId} 
+                value={activeOrderId} 
                 onValueChange={handleOrderChange}
               >
                 <SelectTrigger className="w-[180px] h-8 bg-white border border-gray-100">
@@ -218,8 +217,8 @@ function TrackingMap({ orders, activeTrackingId, setActiveTrackingId, shipment }
                 </SelectTrigger>
                 <SelectContent>
                   {orders.map((order) => (
-                    <SelectItem key={order.trackingId || order.id || ""} value={order.orderId || order.id || order.trackingId || ""}>
-                      #{order.orderId || order.id || order.trackingId || ""}
+                    <SelectItem key={order.orderId || order.id || ""} value={order.orderId || order.id || ""}>
+                      #{order.orderId || order.id || ""}
                     </SelectItem>
                   ))}
                 </SelectContent>

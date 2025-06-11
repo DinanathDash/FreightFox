@@ -19,7 +19,7 @@ import CreateShipmentDialog from './CreateShipmentDialog';
 function ShipmentPage() {
   const [shipments, setShipments] = useState([]);
   const [filteredShipments, setFilteredShipments] = useState([]);
-  const [activeTrackingId, setActiveTrackingId] = useState("");
+  const [activeOrderId, setActiveOrderId] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateRangeDialogOpen, setDateRangeDialogOpen] = useState(false);
@@ -54,8 +54,8 @@ function ShipmentPage() {
 
         if (orders.length > 0) {
           // Set the first order as active
-          console.log("Setting active tracking ID to:", orders[0].orderId || orders[0].id || orders[0].trackingId);
-          setActiveTrackingId(orders[0].orderId || orders[0].id || orders[0].trackingId);
+          console.log("Setting active order ID to:", orders[0].orderId || orders[0].id);
+          setActiveOrderId(orders[0].orderId || orders[0].id);
         } else {
           console.log("No orders found in the database");
           toast.error("Could not fetch shipments");
@@ -183,6 +183,10 @@ function ShipmentPage() {
         result = result.filter(order => order.status === "Delivered");
         console.log(`After delivered filter: ${result.length} orders`);
       }
+      else if (activeFilter === "canceled") {
+        result = result.filter(order => order.status === "Cancelled");
+        console.log(`After canceled filter: ${result.length} orders`);
+      }
     }
 
     // Apply status filter
@@ -222,8 +226,8 @@ function ShipmentPage() {
     setFilteredShipments(result);
   }, [shipments, activeFilters, sortOrder, activeFilter]);
 
-  const handleOpenDetails = (shipment) => {
-    setSelectedShipment(shipment);
+  const handleOpenDetails = (shipment, initialTab = "details") => {
+    setSelectedShipment({...shipment, initialTab});
     setDetailsDialogOpen(true);
   };
 
@@ -279,11 +283,11 @@ function ShipmentPage() {
           </div>
         </div>
 
-        {activeTrackingId && (
+        {activeOrderId && (
           <TimelineTracker 
             orders={shipments}
-            activeTrackingId={activeTrackingId}
-            setActiveTrackingId={setActiveTrackingId}
+            activeTrackingId={activeOrderId}
+            setActiveTrackingId={setActiveOrderId}
           />
         )}
 
@@ -327,6 +331,7 @@ function ShipmentPage() {
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="transit">In Transit</TabsTrigger>
                 <TabsTrigger value="delivered">Delivered</TabsTrigger>
+                <TabsTrigger value="canceled">Canceled</TabsTrigger>
               </TabsList>
 
               {loading ? (
@@ -368,7 +373,8 @@ function ShipmentPage() {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setActiveTrackingId(order.orderId || order.id || order.trackingId);
+                                setActiveOrderId(order.orderId || order.id);
+                                handleOpenDetails(order, "tracking");
                               }}
                             >
                               Track
@@ -387,14 +393,19 @@ function ShipmentPage() {
 
       {/* Dialogs */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Shipment Details</DialogTitle>
             <DialogDescription>
               Complete information about this shipment
             </DialogDescription>
           </DialogHeader>
-          {selectedShipment && <ShipmentDetails shipment={selectedShipment} />}
+          {selectedShipment && (
+            <ShipmentDetails 
+              shipment={{...selectedShipment, initialTab: undefined}} 
+              initialTab={selectedShipment.initialTab} 
+            />
+          )}
         </DialogContent>
       </Dialog>
 

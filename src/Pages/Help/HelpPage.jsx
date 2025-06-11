@@ -62,7 +62,7 @@ Follow these steps to create your first shipment:
 4. **Review**: Double-check all information for accuracy.
 5. **Submit**: Click "Create Shipment" to finalize your order.
 6. **Payment**: Complete the payment process through our secure payment gateway.
-7. **Confirmation**: You'll receive a confirmation email with tracking details.
+7. **Confirmation**: Your shipment will be created with tracking details.
 
 Your shipment will be processed and you can track its progress from the Shipments page.
       `
@@ -132,7 +132,7 @@ We accept the following payment methods:
    - Bulk shipment discounts
 
 ## Invoices and Receipts
-- Digital receipts are sent via email immediately after payment
+- Digital receipts are available immediately after payment
 - Monthly statements are available for business accounts
 - All payment records can be accessed in the "Billing History" section
 

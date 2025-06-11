@@ -23,9 +23,9 @@ function UserOrdersList() {
           const userOrders = await getUserOrdersWithShipmentDetails(currentUser.uid);
           setOrders(userOrders);
           
-          // Set first order as active if available, using orderId for easier user searching
+          // Set first order as active if available, using orderId for tracking
           if (userOrders.length > 0) {
-            setActiveOrder(userOrders[0].orderId || userOrders[0].id || userOrders[0].trackingId);
+            setActiveOrder(userOrders[0].orderId || userOrders[0].id);
           }
         }
       } catch (error) {
@@ -40,9 +40,11 @@ function UserOrdersList() {
 
   // Filter orders based on tab
   const filteredOrders = orders.filter(order => {
+    const status = order.status?.toLowerCase() || '';
     if (activeTabValue === 'all') return true;
-    if (activeTabValue === 'delivered') return order.status === 'Delivered';
-    if (activeTabValue === 'inTransit') return ['In Transit', 'Shipped', 'Processing'].includes(order.status);
+    if (activeTabValue === 'delivered') return status === 'delivered';
+    if (activeTabValue === 'canceled') return status === 'canceled' || status === 'cancelled';
+    if (activeTabValue === 'inTransit') return ['in transit', 'shipped', 'processing'].includes(status);
     return true;
   });
 
@@ -74,6 +76,7 @@ function UserOrdersList() {
                   <TabsTrigger value="all">All Orders</TabsTrigger>
                   <TabsTrigger value="inTransit">In Transit</TabsTrigger>
                   <TabsTrigger value="delivered">Delivered</TabsTrigger>
+                  <TabsTrigger value="canceled">Canceled</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -101,10 +104,10 @@ function UserOrdersList() {
                     {filteredOrders.map(order => (
                       <TableRow 
                         key={order.id} 
-                        className={activeOrder === order.trackingId ? 'bg-blue-50' : ''}
+                        className={activeOrder === (order.orderId || order.id) ? 'bg-blue-50' : ''}
                       >
                         <TableCell className="font-medium">
-                          {order.trackingId || order.id}
+                          {order.orderId || order.id}
                         </TableCell>
                         <TableCell>{order.formattedCreatedAt}</TableCell>
                         <TableCell>
@@ -117,20 +120,25 @@ function UserOrdersList() {
                         </TableCell>
                         <TableCell>
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                            order.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
-                            order.status === 'Processing' ? 'bg-purple-100 text-purple-800' :
-                            order.status === 'Shipped' ? 'bg-amber-100 text-amber-800' :
+                            order.status?.toLowerCase() === 'delivered' ? 'bg-green-100 text-green-800' :
+                            order.status?.toLowerCase() === 'in transit' ? 'bg-blue-100 text-blue-800' :
+                            order.status?.toLowerCase() === 'processing' ? 'bg-purple-100 text-purple-800' :
+                            order.status?.toLowerCase() === 'shipped' ? 'bg-amber-100 text-amber-800' :
+                            order.status?.toLowerCase() === 'pending' ? 'bg-amber-100 text-amber-800' :
+                            order.status?.toLowerCase() === 'cancelled' ? 'bg-red-100 text-red-800' :
+                            order.status?.toLowerCase() === 'canceled' ? 'bg-red-100 text-red-800' :
+                            order.status?.toLowerCase() === 'out for delivery' ? 'bg-amber-100 text-amber-800' :
                             'bg-gray-100 text-gray-800'
                           }`}>
-                            {order.status}
+                            {/* Ensure first letter is capitalized */}
+                            {order.status?.charAt(0).toUpperCase() + order.status?.slice(1) || 'N/A'}
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => setActiveOrder(order.trackingId)}
+                            onClick={() => setActiveOrder(order.orderId || order.id)}
                           >
                             Track
                           </Button>

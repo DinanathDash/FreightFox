@@ -13,7 +13,7 @@ import StatsCard from './StatsCard';
 
 function DashboardPage() {
   const [activeFilter, setActiveFilter] = useState("12 months");
-  const [activeTrackingId, setActiveTrackingId] = useState("");
+  const [activeOrderId, setActiveOrderId] = useState("");
   const [shipments, setShipments] = useState([]);
   const [filteredShipments, setFilteredShipments] = useState([]);
   const [stats, setStats] = useState({
@@ -72,9 +72,9 @@ function DashboardPage() {
 
         setWeeklyChange(changeStats);
 
-        // Set active tracking ID using orderId instead of trackingId for easier user searching
+        // Set active order ID for tracking
         if (orders.length > 0) {
-          setActiveTrackingId(orders[0].orderId || orders[0].id || orders[0].trackingId);
+          setActiveOrderId(orders[0].orderId || orders[0].id);
         }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -219,8 +219,9 @@ function DashboardPage() {
   ];
 
   // Handler for date range dialog
-  const handleDateRangeApply = (startDate, endDate) => {
-    setCustomDateRange({ startDate, endDate });
+  const handleDateRangeApply = (dateRange) => {
+    // dateRange is already in the format { startDate, endDate }
+    setCustomDateRange(dateRange);
     // Reset the active filter since we're now using a custom date range
     setActiveFilter(null);
   };
@@ -292,7 +293,7 @@ function DashboardPage() {
           {/* Stats Cards with Charts */}
           <div className="grid grid-cols-1 gap-6 mt-4">
             {/* Total Shipments */}
-            <StatsCard 
+            <StatsCard
               title="Total Shipments"
               value={loading ? "..." : stats.totalShipments.toLocaleString()}
               change={weeklyChange.totalChange}
@@ -308,7 +309,7 @@ function DashboardPage() {
             />
 
             {/* Delivered */}
-            <StatsCard 
+            <StatsCard
               title="Delivered"
               value={loading ? "..." : stats.delivered.toLocaleString()}
               change={weeklyChange.deliveredChange}
@@ -330,8 +331,8 @@ function DashboardPage() {
             {/* Use our SimpleTracker component with tracking data */}
             <SimpleTracker
               orders={filteredShipments}
-              activeTrackingId={activeTrackingId}
-              setActiveTrackingId={setActiveTrackingId}
+              activeTrackingId={activeOrderId}
+              setActiveTrackingId={setActiveOrderId}
             />
           </div>
         </div>
@@ -400,48 +401,47 @@ function DashboardPage() {
                     ) : (
                       filteredShipments.map((shipment, index) => (
                         <TableRow key={index} className="hover:bg-gray-50">
-                        <TableCell className="font-medium text-sm">{`#${shipment.orderId || shipment.id}`}</TableCell>
-                        <TableCell className="text-sm">
-                          {shipment.packageDetails?.category || shipment.category}
-                          {shipment.packageDetails && 
-                            <div className="text-xs text-gray-500">
-                              {shipment.packageDetails.size} • {shipment.packageDetails.weight} kg
-                            </div>
-                          }
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {shipment.shipping?.estimatedArrivalDate ? 
-                            shipment.shipping.arrivalDateString :
-                            shipment.arrival}
-                          {shipment.shipping && 
-                            <div className="text-xs text-gray-500">
-                              {shipment.shipping.estimatedDeliveryDays} days
-                            </div>
-                          }
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {shipment.route || 
-                            (shipment.shipping && 
-                              `${shipment.shipping.source.city} → ${shipment.shipping.destination.city}`)}
-                          {shipment.shipping && 
-                            <div className="text-xs text-gray-500">
-                              {shipment.shipping.distance} km
-                            </div>
-                          }
-                        </TableCell>
-                        <TableCell>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                            shipment.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
-                            shipment.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
-                            shipment.status === 'Processing' ? 'bg-purple-100 text-purple-800' :
-                            'bg-blue-100 text-blue-800'
-                          }`}>
-                            {shipment.status}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                  ))
+                          <TableCell className="font-medium text-sm">{`#${shipment.orderId || shipment.id}`}</TableCell>
+                          <TableCell className="text-sm">
+                            {shipment.packageDetails?.category || shipment.category}
+                            {shipment.packageDetails &&
+                              <div className="text-xs text-gray-500">
+                                {shipment.packageDetails.size} • {shipment.packageDetails.weight} kg
+                              </div>
+                            }
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {shipment.shipping?.estimatedArrivalDate ?
+                              shipment.shipping.arrivalDateString :
+                              shipment.arrival}
+                            {shipment.shipping &&
+                              <div className="text-xs text-gray-500">
+                                {shipment.shipping.estimatedDeliveryDays} days
+                              </div>
+                            }
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {shipment.route ||
+                              (shipment.shipping &&
+                                `${shipment.shipping.source.city} → ${shipment.shipping.destination.city}`)}
+                            {shipment.shipping &&
+                              <div className="text-xs text-gray-500">
+                                {shipment.shipping.distance} km
+                              </div>
+                            }
+                          </TableCell>
+                          <TableCell>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                shipment.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
+                                  shipment.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
+                                    shipment.status === 'Processing' ? 'bg-purple-100 text-purple-800' :
+                                      'bg-blue-100 text-blue-800'
+                              }`}>
+                              {shipment.status}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))
                     )}
                   </TableBody>
                 </Table>
@@ -450,19 +450,20 @@ function DashboardPage() {
           </div>
         </div>
       </div>
-      
+
       {/* Date Range Dialog */}
       <DateRangeDialog
-    open={dateRangeDialogOpen}
-    onClose={() => setDateRangeDialogOpen(false)}
-    onApply={handleDateRangeApply}
-  />
+        open={dateRangeDialogOpen}
+        onOpenChange={setDateRangeDialogOpen}
+        onDateRangeChange={handleDateRangeApply}
+      />
 
       {/* Filters Dialog */}
       <FiltersDialog
         open={filtersDialogOpen}
-        onClose={() => setFiltersDialogOpen(false)}
-        onApply={handleFiltersApply}
+        onOpenChange={setFiltersDialogOpen}
+        onFiltersChange={handleFiltersApply}
+        currentFilters={{}}
       />
     </DashboardLayout>
   );

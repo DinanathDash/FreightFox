@@ -43,13 +43,13 @@ function PriceCalculator() {
     setTimeout(() => {
       const { weight, length, width, height, packageType, serviceType } = formData;
       
-      // Basic calculation
-      let basePrice = parseFloat(weight) * 2; // $2 per kg
+      // Basic calculation (using Indian Rupee rates)
+      let basePrice = parseFloat(weight) * 150; // ₹150 per kg
       const volume = parseFloat(length) * parseFloat(width) * parseFloat(height) / 5000; // Dimensional weight
       
       // Use the greater of actual weight or dimensional weight
       const chargeableWeight = Math.max(parseFloat(weight), volume);
-      basePrice = chargeableWeight * 2;
+      basePrice = chargeableWeight * 150;
       
       // Add package type premium
       if (packageType === 'fragile') basePrice *= 1.2; // 20% more for fragile
@@ -188,9 +188,62 @@ function PriceCalculator() {
       {price && (
         <>
           <Separator />
-          <div className="text-center">
-            <div className="text-gray-500">Estimated Price</div>
-            <div className="text-2xl font-bold">${price}</div>
+          <div className="bg-gray-50 p-4 rounded-md">
+            <div className="text-center mb-3">
+              <div className="text-gray-500">Estimated Price</div>
+              <div className="text-2xl font-bold">₹{price}</div>
+            </div>
+            
+            <Separator className="my-2" />
+            
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Base Rate:</span>
+                <span>₹150 per kg</span>
+              </div>
+              
+              {parseFloat(formData.weight) > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Weight ({formData.weight} kg):</span>
+                  <span>₹{(parseFloat(formData.weight) * 150).toFixed(2)}</span>
+                </div>
+              )}
+              
+              {(parseFloat(formData.length) > 0 && parseFloat(formData.width) > 0 && parseFloat(formData.height) > 0) && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Volumetric Weight:</span>
+                  <span>
+                    {(parseFloat(formData.length) * parseFloat(formData.width) * parseFloat(formData.height) / 5000).toFixed(2)} kg
+                  </span>
+                </div>
+              )}
+              
+              {formData.packageType !== 'standard' && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Package Type ({formData.packageType}):</span>
+                  <span>
+                    {formData.packageType === 'fragile' ? '+20%' : 
+                     formData.packageType === 'heavy' ? '+30%' : ''}
+                  </span>
+                </div>
+              )}
+              
+              {formData.serviceType !== 'standard' && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Service Type ({formData.serviceType}):</span>
+                  <span>
+                    {formData.serviceType === 'express' ? '+50%' : 
+                     formData.serviceType === 'priority' ? '+100%' : ''}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            <Separator className="my-2" />
+            
+            <div className="text-xs text-gray-500">
+              Formula: Max(Weight, Volumetric Weight) × Rate × Package Type Factor × Service Type Factor
+            </div>
           </div>
         </>
       )}

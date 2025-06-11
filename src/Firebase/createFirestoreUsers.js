@@ -15,8 +15,9 @@ import {
 /**
  * Create user records in Firestore for the authenticated users we want to generate orders for
  * @param {Array} emails - List of email addresses from authenticated users we want to add
+ * @param {Object} uidMapping - Object mapping email addresses to Firebase Auth UIDs
  */
-async function createFirestoreUsers(emails) {
+async function createFirestoreUsers(emails, uidMapping = {}) {
   try {
     console.log('Creating user records in Firestore...');
     
@@ -25,8 +26,8 @@ async function createFirestoreUsers(emails) {
       // Extract username from email
       const name = email.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
       
-      // Generate a random UID (usually this would come from Firebase Auth)
-      const uid = `user_${Math.random().toString(36).substring(2, 15)}`;
+      // We'll need to use the Firebase Auth UID for this user
+      // This will be provided when calling this function or fetched from Firebase Auth
       
       // Generate random phone number
       const phone = `${['90', '91', '81', '70', '71', '62'][Math.floor(Math.random() * 6)]}${Math.floor(10000000 + Math.random() * 90000000)}`;
@@ -43,7 +44,7 @@ async function createFirestoreUsers(emails) {
       const profilePhoto = `https://randomuser.me/api/portraits/${gender}/${photoIndex}.jpg`;
       
       return {
-        uid,
+        // No uid here - we'll get it from Firebase Auth
         email,
         name,
         phone,
@@ -56,11 +57,34 @@ async function createFirestoreUsers(emails) {
     // Add each user to Firestore
     const createdUsers = [];
     
+    // Convert the UID mapping object to a Map for easier lookup
+    const emailToUidMap = new Map(Object.entries(uidMapping));
+    
     for (const user of userProfiles) {
-      // We use the generated UID as document ID
-      await setDoc(doc(db, 'Users', user.uid), user);
-      console.log(`Created user profile for ${user.email} with ID ${user.uid}`);
-      createdUsers.push(user);
+      try {
+        // Look up the Firebase Auth UID for this email
+        const uid = emailToUidMap.get(user.email);
+        
+        if (!uid) {
+          console.warn(`No UID found for ${user.email}. Skipping user creation.`);
+          continue;
+        }
+        
+        // Add uid field to user data
+        const userData = {
+          ...user,
+          uid // Include uid in the document data for consistency
+        };
+        
+        // Use the Firebase Auth UID as document ID
+        await setDoc(doc(db, 'Users', uid), userData);
+        console.log(`Created user profile for ${user.email} with ID ${uid}`);
+        
+        // Add to created users list
+        createdUsers.push({...userData, id: uid});
+      } catch (error) {
+        console.error(`Error creating user ${user.email}:`, error);
+      }
     }
     
     console.log(`Successfully created ${createdUsers.length} user profiles in Firestore`);

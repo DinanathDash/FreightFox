@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-
 /**
- * This is a command-line script to generate orders with the new from/to structure
- * Run this directly with Node.js:
- * node generateNewOrders.js
+ * Command line script to generate test orders
  */
-import { generateOrdersForAllUsers } from './src/Firebase/orderGenerator.js';
+
+import 'dotenv/config';
+import { generateOrdersForAllUsers } from '../orderGenerator.js';
 
 console.log("Starting order generation script...");
 

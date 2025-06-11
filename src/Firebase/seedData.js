@@ -86,23 +86,16 @@ async function createUsersIfNeeded() {
             userRefs.push(existingUser);
             console.log(`Found existing user with ID: ${existingUser.id}`);
           } else {
-            // If user exists in Auth but not in Firestore, create the Firestore record
+            // If user exists in Auth but not in Firestore, we need to find their Auth UID first
             console.log(`Creating Firestore record for existing auth user: ${user.email}`);
+            console.log(`WARNING: Cannot determine Firebase Auth UID for ${user.email}.`);
+            console.log(`Please use the authentication tools to find the correct UID for this user.`);
             
-            // Get existing users from Firestore to find their UID
-            const userData = {
-              email: user.email,
-              name: user.name,
-              phone: user.phone,
-              address: user.address,
-              profilePhoto: user.profilePhoto,
-              createdAt: serverTimestamp()
-            };
+            // Skip creating this user until we have the proper Auth UID
+            console.log(`Skipping user creation for ${user.email} - need Firebase Auth UID`);
             
-            // Create a new document with auto-generated ID
-            const docRef = await addDoc(collection(db, 'Users'), userData);
-            userRefs.push({ id: docRef.id, ...userData });
-            console.log(`Added missing user record with ID: ${docRef.id}`);
+            // Note: Previously this would create a document with an auto-generated ID,
+            // which caused the mismatch between Auth UIDs and Firestore document IDs
           }
         }
       } catch (error) {

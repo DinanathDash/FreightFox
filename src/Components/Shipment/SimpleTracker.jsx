@@ -2,26 +2,36 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
-function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
-  // Get current active order - now looking for orderId or id first, then trackingId as fallback
-  const activeOrder = orders.find(order => order.orderId === activeTrackingId || order.id === activeTrackingId || order.trackingId === activeTrackingId) || orders[0];
+function SimpleTracker({ orders, activeTrackingId: activeOrderId, setActiveTrackingId: setActiveOrderId }) {
+  // Get current active order - looking for matching order ID
+  const activeOrder = orders.find(order => {
+    // Convert everything to strings for comparison since orderId might be numeric
+    const orderId = order.orderId ? order.orderId.toString() : null;
+    const id = order.id ? order.id.toString() : null;
+    const activeId = activeOrderId ? activeOrderId.toString() : null;
+    
+    return orderId === activeId || id === activeId;
+  }) || orders[0];
   
   // Calculate the progress percentage based on order status
   const calculateProgress = (status) => {
-    switch(status) {
-      case 'Pending': 
+    // Normalize status to lowercase for case-insensitive comparison
+    const normalizedStatus = status?.toLowerCase() || '';
+    
+    switch(normalizedStatus) {
+      case 'pending': 
         return 0;
-      case 'Processing':
+      case 'processing':
         return 10;
-      case 'Shipped':
+      case 'shipped':
         return 25;
-      case 'In Transit':
+      case 'in transit':
         return 50;
-      case 'Out for Delivery':
+      case 'out for delivery':
         return 75;
-      case 'Delivered':
+      case 'delivered':
         return 100;
-      case 'Cancelled':
+      case 'cancelled':
         return 0; // Cancelled orders show no progress
       default:
         return 25; // Default to shipped
@@ -30,7 +40,7 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
 
   // Handle order selection change
   const handleOrderChange = (value) => {
-    setActiveTrackingId(value);
+    setActiveOrderId(value);
   };
 
   // If no orders or active order, show loading state
@@ -66,7 +76,7 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
         <div className="relative pb-8">
           {/* Order Info */}
           <div className="mb-4">
-            <p className="text-sm font-medium text-gray-500">Order ID: <span className="font-bold text-gray-700">{activeOrder.orderId || activeOrder.id || activeOrder.trackingId}</span></p>
+            <p className="text-sm font-medium text-gray-500">Order ID: <span className="font-bold text-gray-700">{activeOrder.orderId || activeOrder.id}</span></p>
             
             {/* Status Line - Now full width above from/to */}
             <div className="mt-4 mb-4 w-full">
@@ -102,15 +112,16 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
               <div>
                 <p className="text-sm font-medium text-gray-500">Status</p>
                 <span className={`px-3 py-1 mt-1 inline-block rounded-full text-xs font-medium ${
-                  activeOrder.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                  activeOrder.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
-                  activeOrder.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
-                  activeOrder.status === 'Processing' ? 'bg-purple-100 text-purple-800' :
-                  activeOrder.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
-                  activeOrder.status === 'Out for Delivery' ? 'bg-amber-100 text-amber-800' :
+                  activeOrder.status?.toLowerCase() === 'delivered' ? 'bg-green-100 text-green-800' :
+                  activeOrder.status?.toLowerCase() === 'pending' ? 'bg-amber-100 text-amber-800' :
+                  activeOrder.status?.toLowerCase() === 'cancelled' ? 'bg-red-100 text-red-800' :
+                  activeOrder.status?.toLowerCase() === 'processing' ? 'bg-purple-100 text-purple-800' :
+                  activeOrder.status?.toLowerCase() === 'in transit' ? 'bg-blue-100 text-blue-800' :
+                  activeOrder.status?.toLowerCase() === 'out for delivery' ? 'bg-amber-100 text-amber-800' :
                   'bg-gray-100 text-gray-800'
                 }`}>
-                  {activeOrder.status}
+                  {/* Ensure first letter is capitalized */}
+                  {activeOrder.status?.charAt(0).toUpperCase() + activeOrder.status?.slice(1) || 'N/A'}
                 </span>
               </div>
               <div>
@@ -135,18 +146,23 @@ function SimpleTracker({ orders, activeTrackingId, setActiveTrackingId }) {
           {/* Order Selection */}
           <div className="absolute bottom-0 right-0">
             <Select 
-              value={activeTrackingId} 
+              value={activeOrderId} 
               onValueChange={handleOrderChange}
             >
-              <SelectTrigger className="w-[180px] h-8 bg-white border border-gray-100">
+              <SelectTrigger className="w-[130px] h-8 bg-white border border-gray-100">
                 <SelectValue placeholder="Select Order ID" />
               </SelectTrigger>
               <SelectContent>
-                {orders.map((order) => (
-                  <SelectItem key={order.trackingId || order.id} value={order.orderId || order.id || order.trackingId}>
-                    #{order.orderId || order.id || order.trackingId}
-                  </SelectItem>
-                ))}
+                {orders.map((order) => {
+                  // Use orderId as the displayed ID
+                  const displayId = order.orderId || order.id;
+                  const valueId = order.orderId || order.id;
+                  return (
+                    <SelectItem key={displayId} value={valueId.toString()}>
+                      #{displayId}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>

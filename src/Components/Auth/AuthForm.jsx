@@ -54,7 +54,7 @@ function AuthForm() {
     if (errors.length > 0) {
       return `Password must ${errors.join(", ")}`;
     }
-    
+
     return null;
   };
 
@@ -63,22 +63,22 @@ function AuthForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-  
+
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     // Basic validation
     if (!file.type.startsWith('image/')) {
       toast.error("Please select an image file");
       return;
     }
-    
+
     if (file.size > 2 * 1024 * 1024) { // 2MB limit
       toast.error("Image is too large. Please select an image under 2MB");
       return;
     }
-    
+
     // Preview the image and store it for later upload
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -98,7 +98,7 @@ function AuthForm() {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    
+
     // Collect validation errors only on submit
     if (!email) {
       toast.error('Please enter your email address');
@@ -126,10 +126,10 @@ function AuthForm() {
       handleResetPassword(e);
       return;
     }
-    
+
     // Collect validation errors
     const errors = [];
-    
+
     // Validate email
     if (!email) {
       errors.push('Email is required');
@@ -148,19 +148,19 @@ function AuthForm() {
       if (!name) {
         errors.push('Name is required');
       }
-      
+
       // Validate password match
       if (password !== confirmPassword) {
         errors.push('Passwords do not match');
       }
-      
+
       // Validate password strength
       const passwordError = validatePassword(password);
       if (passwordError) {
         errors.push(passwordError);
       }
     }
-    
+
     // Show all errors as one toast
     if (errors.length > 0) {
       toast.error(errors[0]); // Show only the first error
@@ -174,7 +174,7 @@ function AuthForm() {
       } else {
         // Register with email and password
         const userCredential = await signup(email, password, name);
-        
+
         // If a profile picture was selected, update the user profile
         if (profilePicture && userCredential.user) {
           try {
@@ -186,7 +186,7 @@ function AuthForm() {
             // Continue anyway, as the account was already created
           }
         }
-        
+
         toast.success('Registration successful! Please log in to continue.');
         setIsLogin(true);
       }
@@ -246,7 +246,7 @@ function AuthForm() {
                       className="bg-white/70 border border-gray-200"
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">
                       Profile Picture (optional)
@@ -254,9 +254,9 @@ function AuthForm() {
                     <div className="flex items-center space-x-4">
                       <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                         {profilePicture ? (
-                          <img 
-                            src={profilePicture} 
-                            alt="Profile Preview" 
+                          <img
+                            src={profilePicture}
+                            alt="Profile Preview"
                             className="h-full w-full object-cover"
                           />
                         ) : (
@@ -278,11 +278,11 @@ function AuthForm() {
                   </div>
                 </>
               )}
-              
+
               <div className="space-y-2" >
                 <Input
                   id="email"
-                  type="text" 
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
@@ -302,7 +302,7 @@ function AuthForm() {
                   />
                 </div>
               )}
-              
+
               {!isLogin && !isResetPassword && (
                 <div className="space-y-2">
                   <Input

@@ -9,7 +9,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "seed-data": "node src/Firebase/runSeedData.js",
-    "generate-orders": "node runOrderGenerator.js"
+    "generate-orders": "node src/Firebase/tools/generateOrders.js",
+    "login": "node src/Firebase/tools/login.js",
+    "check-users": "node src/Firebase/tools/checkUsers.js",
+    "check-id-strategy": "node src/Firebase/tools/checkIdStrategy.js",
+    "fix-users": "node src/Firebase/tools/fixUsers.js",
+    "fix-duplicates": "node src/Firebase/tools/fixDuplicates.js",
+    "fix-orders": "node src/Firebase/tools/fixOrders.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -32,11 +38,12 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "firebase": "^11.9.0",
+    "firebase-admin": "^13.4.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.513.0",
     "marked": "^15.0.12",
     "next-themes": "^0.4.6",
-    "razorpay": "^2.9.6",
+    "node-fetch": "^2.7.0",
     "react": "^19.1.0",
     "react-day-picker": "^9.7.0",
     "react-dom": "^19.1.0",

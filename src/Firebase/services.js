@@ -11,19 +11,30 @@ import {
   Timestamp,
   addDoc,
   serverTimestamp,
-  updateDoc
+  updateDoc,
+  deleteDoc,
+  writeBatch
 } from 'firebase/firestore';
 import { enhanceOrderWithCoordinates } from './locationUtils.js';
+import { getUserDocRef } from './enforceAuthIdStrategy.js';
+
+// Import user services
+import { updateUserProfile, deleteUserAccount } from './userServices.js';
+
+// Export user services alongside other services
+export { updateUserProfile, deleteUserAccount };
 
 // Get user by ID
 export async function getUserById(userId) {
   try {
-    const userRef = doc(db, 'Users', userId);
+    // Use getUserDocRef to ensure we're using the correct ID pattern
+    const userRef = getUserDocRef(userId);
     const userSnap = await getDoc(userRef);
     
     if (userSnap.exists()) {
       return { id: userSnap.id, ...userSnap.data() };
     } else {
+      console.warn(`User with ID ${userId} not found`);
       return null;
     }
   } catch (error) {
@@ -131,7 +142,7 @@ export async function getAllOrders(filter = null) {
         },
         createdAt: new Date(),
         estimatedArrivalDate: new Date(),
-        trackingId: 'TRK-120829',
+        orderId: '59125911',
         route: 'Hyderabad → Surat',
         cost: {
           totalAmount: 222.64,
@@ -181,7 +192,7 @@ export async function getAllOrders(filter = null) {
       },
       createdAt: new Date(),
       estimatedArrivalDate: new Date(),
-      trackingId: 'TRK-120829',
+      orderId: '59125911',
       route: 'Hyderabad → Surat',
       cost: {
         totalAmount: 222.64,
@@ -212,11 +223,11 @@ export async function getDashboardStats(timeFilter = '12 months') {
 }
 
 // Get order by tracking ID
-export async function getOrderByTrackingId(trackingId) {
+export async function getOrderById(orderId) {
   try {
     const q = query(
       collection(db, 'Orders'),
-      where('trackingId', '==', trackingId)
+      where('orderId', '==', orderId)
     );
     
     const querySnapshot = await getDocs(q);

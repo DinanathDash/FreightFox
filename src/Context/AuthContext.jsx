@@ -9,7 +9,14 @@ import {
   sendPasswordResetEmail,
   updateProfile
 } from 'firebase/auth';
-import { auth } from '../Firebase/sharedConfig';
+import { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  serverTimestamp 
+} from 'firebase/firestore';
+import { auth, db } from '../Firebase/sharedConfig';
+import { storeUserWithAuthId } from '../Firebase/enforceAuthIdStrategy.js';
 
 // Session timeout in milliseconds (30 minutes)
 const SESSION_TIMEOUT = 30 * 60 * 1000;
@@ -39,19 +46,52 @@ export function AuthProvider({ children }) {
     }
   };
   
+  // Function to ensure user exists in Firestore with correct UID
+  const syncUserWithFirestore = async (user) => {
+    if (!user) return null;
+    
+    try {
+      // Use our enforceAuthIdStrategy to properly store the user with Firebase Auth UID
+      const additionalData = {
+        // Set additional user properties
+        name: user.displayName || (user.email ? user.email.split('@')[0] : ''),
+        profilePhoto: user.photoURL || null,
+        phone: user.phoneNumber || '',
+        lastLogin: serverTimestamp()
+      };
+      
+      // This will create a new user or update an existing one using the Auth UID as document ID
+      await storeUserWithAuthId(user, additionalData);
+      
+      return user;
+    } catch (error) {
+      console.error("Error syncing user with Firestore:", error);
+      return user; // Return user even if sync fails to not break authentication
+    }
+  };
+  
   async function signup(email, password, name) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
     // Update profile with the user's name if provided
     if (name) {
       await updateProfile(userCredential.user, {
         displayName: name
       });
     }
+    
+    // Ensure user exists in Firestore with correct UID
+    await syncUserWithFirestore(userCredential.user);
+    
     return userCredential;
   }
 
   async function login(email, password) {
     const result = await signInWithEmailAndPassword(auth, email, password);
+    
+    // Ensure user exists in Firestore with correct UID
+    await syncUserWithFirestore(result.user);
+    
     startSessionTimer();
     return result;
   }
@@ -72,10 +112,9 @@ export function AuthProvider({ children }) {
     
     const result = await signInWithPopup(auth, provider);
     
-    // Google sign-in already provides name and profile picture
-    // We don't need to do anything special as Firebase auth captures this info
-    // The user object already has displayName and photoURL properties from Google
-
+    // Sync Google user with Firestore
+    await syncUserWithFirestore(result.user);
+    
     console.log("Google sign in successful with profile:", {
       displayName: result.user.displayName,
       email: result.user.email,

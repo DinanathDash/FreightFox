@@ -5,6 +5,7 @@ import DashboardPage from '../Pages/Dashboard/DashboardPage';
 import ShipmentPage from '../Pages/Shipment';
 import HelpPage from '../Pages/Help';
 import SupportPage from '../Pages/Support';
+import SettingsPage from '../Pages/Settings';
 import SessionTimeout from '../Components/Auth/SessionTimeout';
 import SessionExpiryModal from '../Components/Auth/SessionExpiryModal';
 
@@ -71,7 +72,7 @@ function AppRouter() {
           path="/settings"
           element={
             <PrivateRoute>
-              <DashboardPage />
+              <SettingsPage />
             </PrivateRoute>
           }
         />

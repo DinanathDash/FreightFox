@@ -4,12 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../Components/ui/ta
 import TimelineTracker from '../../Components/Shipment/TimelineTracker.jsx';
 import TrackingMap from '../../Components/Shipment/TrackingMap.jsx';
 
-function ShipmentDetails({ shipment }) {
-  const [activeTab, setActiveTab] = useState("details");
+function ShipmentDetails({ shipment, initialTab = "details" }) {
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   // CSS utility classes for consistent spacing and text size
   const labelClass = "text-gray-500 text-sm";
-  const valueClass = "text-sm";
+  const valueClass = "text-sm break-words";
   const gridClass = "grid grid-cols-2 gap-1 py-0.5";
 
   // Format date handling different date formats
@@ -49,19 +49,42 @@ function ShipmentDetails({ shipment }) {
     // Create a processed copy
     const processed = { ...shipment };
     
-    // Handle address display
-    if (shipment.from) {
-      processed.originAddress = `${shipment.from.street || ''}, ${shipment.from.landmark || ''}, ${shipment.from.city}, ${shipment.from.state}, ${shipment.from.pincode}`;
-      processed.origin = `${shipment.from.city}, ${shipment.from.state}`;
+    // Handle address display - support both sender/recipient and from/to structures
+    if (shipment.sender && shipment.sender.address) {
+      const addr = shipment.sender.address;
+      processed.originAddress = `${addr.street || ''}, ${addr.landmark || ''}, ${addr.city || ''}, ${addr.state || ''}, ${addr.pincode || ''}`.replace(/, ,/g, ',').replace(/^, |, $/g, '');
+      processed.origin = `${addr.city || ''}, ${addr.state || ''}`.replace(/, $/g, '');
+      
+      // Extract sender info
+      processed.fromName = shipment.sender.name;
+      processed.fromEmail = shipment.sender.email;
+      processed.fromPhone = shipment.sender.phone;
+    } else if (shipment.from) {
+      processed.originAddress = `${shipment.from.street || ''}, ${shipment.from.landmark || ''}, ${shipment.from.city || ''}, ${shipment.from.state || ''}, ${shipment.from.pincode || ''}`.replace(/, ,/g, ',').replace(/^, |, $/g, '');
+      processed.origin = `${shipment.from.city || ''}, ${shipment.from.state || ''}`.replace(/, $/g, '');
     }
     
-    if (shipment.to) {
-      processed.destinationAddress = `${shipment.to.street || ''}, ${shipment.to.landmark || ''}, ${shipment.to.city}, ${shipment.to.state}, ${shipment.to.pincode}`;
-      processed.destination = `${shipment.to.city}, ${shipment.to.state}`;
+    if (shipment.recipient && shipment.recipient.address) {
+      const addr = shipment.recipient.address;
+      processed.destinationAddress = `${addr.street || ''}, ${addr.landmark || ''}, ${addr.city || ''}, ${addr.state || ''}, ${addr.pincode || ''}`.replace(/, ,/g, ',').replace(/^, |, $/g, '');
+      processed.destination = `${addr.city || ''}, ${addr.state || ''}`.replace(/, $/g, '');
+      
+      // Extract recipient info
+      processed.toName = shipment.recipient.name;
+      processed.toEmail = shipment.recipient.email;
+      processed.toPhone = shipment.recipient.phone;
+    } else if (shipment.to) {
+      processed.destinationAddress = `${shipment.to.street || ''}, ${shipment.to.landmark || ''}, ${shipment.to.city || ''}, ${shipment.to.state || ''}, ${shipment.to.pincode || ''}`.replace(/, ,/g, ',').replace(/^, |, $/g, '');
+      processed.destination = `${shipment.to.city || ''}, ${shipment.to.state || ''}`.replace(/, $/g, '');
     }
     
-    // Ensure weight and dimensions are available
-    if (shipment.packageDetails) {
+    // Ensure weight and dimensions are available - handle both structures
+    if (shipment.package) {
+      processed.weight = shipment.package.weight;
+      processed.dimensions = shipment.package.size || "N/A";
+      processed.packageType = shipment.package.category || "Standard";
+      processed.itemDescription = shipment.package.description;
+    } else if (shipment.packageDetails) {
       processed.weight = shipment.packageDetails.weight;
       
       // Handle different formats of dimensions
@@ -84,11 +107,29 @@ function ShipmentDetails({ shipment }) {
       processed.itemDescription = shipment.packageDetails.description;
     }
     
-    // Ensure price is available
+    // Handle customer information
+    processed.customerName = shipment.customerName || shipment.sender?.name;
+    processed.customerEmail = shipment.customerEmail || shipment.userEmail || shipment.sender?.email;
+    processed.customerPhone = shipment.customerPhone || shipment.sender?.phone;
+    processed.customerId = shipment.customerId || shipment.userId;
+    
+    // Ensure price is available - handle both structures
     if (shipment.cost) {
       processed.price = shipment.cost.totalAmount;
       processed.currency = shipment.cost.currency || 'INR';
+    } else if (shipment.shipping && shipment.shipping.price) {
+      processed.price = shipment.shipping.price;
+      processed.currency = shipment.shipping.currency || 'INR';
+    } else if (shipment.price) {
+      processed.price = shipment.price;
+      processed.currency = 'INR';
     }
+    
+    // Service Type
+    processed.serviceType = shipment.serviceType || (shipment.shipping && shipment.shipping.serviceType) || "Standard";
+    
+    // We're using orderId as our standard tracking identifier
+    processed.orderId = shipment.orderId || shipment.id;
     
     return processed;
   };
@@ -122,11 +163,20 @@ function ShipmentDetails({ shipment }) {
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Expected Delivery:</span>
-                    <span className={valueClass}>{formatDate(processedShipment.expectedDelivery || processedShipment.estimatedArrivalDate) || "N/A"}</span>
+                    <span className={valueClass}>
+                      {processedShipment.serviceType === 'Express' ? 'In 1-2 business days' : 
+                       processedShipment.serviceType === 'Same Day' ? 'Today' : 
+                       processedShipment.serviceType === 'Next Day' ? 'Tomorrow' : 
+                       'In 3-5 business days'}
+                    </span>
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Status:</span>
-                    <span className={`${valueClass} font-medium`}>{processedShipment.status || "N/A"}</span>
+                    <span className={`${valueClass} font-medium`}>
+                      {processedShipment.status 
+                        ? processedShipment.status.charAt(0).toUpperCase() + processedShipment.status.slice(1) 
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Carrier:</span>
@@ -134,13 +184,13 @@ function ShipmentDetails({ shipment }) {
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Service Type:</span>
-                    <span className={valueClass}>{processedShipment.serviceType || "Standard"}</span>
+                    <span className={valueClass}>{processedShipment.serviceType}</span>
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Price:</span>
                     <span className={valueClass}>
                       {processedShipment.price 
-                        ? `${processedShipment.currency === 'INR' ? '₹' : '$'} ${processedShipment.price.toFixed(2)}` 
+                        ? `₹${processedShipment.price.toFixed(2)}` 
                         : "N/A"}
                     </span>
                   </div>
@@ -163,11 +213,11 @@ function ShipmentDetails({ shipment }) {
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Package Type:</span>
-                    <span className={valueClass}>{shipment.packageType || "Standard"}</span>
+                    <span className={valueClass}>{processedShipment.packageType || "Standard"}</span>
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Items:</span>
-                    <span className={valueClass}>{shipment.itemCount || 1}</span>
+                    <span className={valueClass}>{processedShipment.itemCount || 1}</span>
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Description:</span>
@@ -201,19 +251,19 @@ function ShipmentDetails({ shipment }) {
                 <div className="space-y-0.5">
                   <div className={gridClass}>
                     <span className={labelClass}>Customer Name:</span>
-                    <span className={valueClass}>{shipment.customerName || shipment.userName || "N/A"}</span>
+                    <span className={valueClass}>{processedShipment.customerName || "N/A"}</span>
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Email:</span>
-                    <span className={valueClass}>{shipment.customerEmail || shipment.userEmail || "N/A"}</span>
+                    <span className={valueClass}>{processedShipment.customerEmail || "N/A"}</span>
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Phone:</span>
-                    <span className={valueClass}>{shipment.customerPhone || "N/A"}</span>
+                    <span className={valueClass}>{processedShipment.customerPhone || "N/A"}</span>
                   </div>
                   <div className={gridClass}>
                     <span className={labelClass}>Customer ID:</span>
-                    <span className={valueClass}>{shipment.customerId || shipment.userId || "N/A"}</span>
+                    <span className={valueClass}>{processedShipment.customerId || "N/A"}</span>
                   </div>
                 </div>
               </CardContent>
@@ -224,9 +274,9 @@ function ShipmentDetails({ shipment }) {
         <TabsContent value="tracking" className="space-y-2">
           <TimelineTracker
             orders={[shipment]}
-            activeTrackingId={shipment.orderId || shipment.id || shipment.trackingId}
+            activeTrackingId={shipment.orderId || shipment.id}
             detailed={true}
-            setActiveTrackingId={() => {}} /* Empty function since we don't need to change tracking id */
+            setActiveTrackingId={() => {}} /* Empty function since we don't need to change the order id */
           />
         </TabsContent>
 
