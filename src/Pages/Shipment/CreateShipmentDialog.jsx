@@ -18,6 +18,7 @@ import { db } from '../../Firebase/sharedConfig';
 import { useAuth } from '../../Context/AuthContext';
 import { toast } from 'sonner';
 import { cn } from "../../lib/utils";
+import PaymentDialog from "../../Components/Payment/PaymentDialog";
 
 function CreateShipmentDialog({ open, onOpenChange }) {
   const { currentUser } = useAuth();
@@ -56,6 +57,8 @@ function CreateShipmentDialog({ open, onOpenChange }) {
 
   const [loading, setLoading] = useState(false);
   const [price, setPrice] = useState(null);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [createdShipmentId, setCreatedShipmentId] = useState(null);
   const dialogContentRef = useRef(null);
   
   // Custom dialog open/close handler
@@ -162,7 +165,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
         
         // Order tracking info - use 8-digit numeric format
         orderId: generateTrackingNumber(), // Generate 8-digit numeric ID for tracking
-        status: "Processing", // Capitalized status
+        status: "Pending Payment", // Change status to pending payment
         carrier: "FreightFox",
         serviceType: formData.serviceType,
         
@@ -244,47 +247,17 @@ function CreateShipmentDialog({ open, onOpenChange }) {
       // Add to Firestore
       const docRef = await addDoc(collection(db, "Orders"), shipmentData);
       
-      // Success message
-      toast.success(`Shipment created successfully!`);
+      // Set created shipment ID to use for payment
+      setCreatedShipmentId(docRef.id);
       
-      // Reset form and close dialog
-      setFormData({
-        // Sender details (keep from current user)
-        fromName: currentUser?.displayName || '',
-        fromEmail: currentUser?.email || '',
-        fromPhone: '',
-        fromStreet: '',
-        fromCity: '',
-        fromState: '',
-        fromPincode: '',
-        fromLandmark: '',
-        
-        // Reset recipient details
-        toName: '',
-        toEmail: '',
-        toPhone: '',
-        toStreet: '',
-        toCity: '',
-        toState: '',
-        toPincode: '',
-        toLandmark: '',
-        
-        // Reset package details
-        weight: '',
-        packageSize: 'Medium',
-        packageCategory: 'Standard',
-        packageDescription: '',
-        
-        // Reset service type
-        serviceType: 'Standard'
-      });
+      // Show intermediate success message
+      toast.info(`Shipment created. Please complete payment to finalize.`);
       
-      setPrice(null);
+      // Open payment dialog instead of closing
+      setShowPaymentDialog(true);
+      setLoading(false);
       
-      // Close dialog
-      onOpenChange(false);
-      
-      return { success: true, shipmentId: docRef.id };
+      return { success: true, shipmentId: docRef.id, status: 'pending_payment' };
     } catch (error) {
       console.error("Error creating shipment:", error);
       toast.error("Failed to create shipment. Please try again.");
@@ -318,63 +291,124 @@ function CreateShipmentDialog({ open, onOpenChange }) {
     
     await createShipmentInFirebase();
   };
+  
+  // Handle payment completion
+  const handlePaymentSuccess = async (paymentDetails) => {
+    try {
+      // Close payment dialog
+      setShowPaymentDialog(false);
+      
+      // Success message with more detailed info
+      toast.success(`Payment of ₹${price?.toFixed(2) || '0.00'} complete!`, {
+        description: "Your shipment is confirmed and will be processed soon.",
+        duration: 5000,
+      });
+      
+      // Close the shipment creation dialog with a slight delay to give user time to see success message
+      setTimeout(() => {
+        onOpenChange(false);
+      }, 500);
+      
+      // Reset form
+      setFormData({
+        // Sender details (keep from current user)
+        fromName: currentUser?.displayName || '',
+        fromEmail: currentUser?.email || '',
+        fromPhone: '',
+        fromStreet: '',
+        fromCity: '',
+        fromState: '',
+        fromPincode: '',
+        fromLandmark: '',
+        
+        // Reset recipient details
+        toName: '',
+        toEmail: '',
+        toPhone: '',
+        toStreet: '',
+        toCity: '',
+        toState: '',
+        toPincode: '',
+        toLandmark: '',
+        
+        // Reset package details
+        weight: '',
+        packageSize: 'Medium',
+        packageCategory: 'Standard',
+        packageDescription: '',
+        
+        // Reset service type
+        serviceType: 'Standard'
+      });
+      
+      setPrice(null);
+      setCreatedShipmentId(null);
+      
+      // Close main dialog
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error updating shipment after payment:", error);
+      toast.error("There was a problem finalizing your payment.");
+    }
+  };
 
   return (
-    <Dialog open={open} onOpenChange={handleDialogChange}>
-      <DialogContent 
-        className={cn(
-          "w-full max-w-4xl",
-          "max-h-[85vh] overflow-y-auto"
-        )}
-        ref={dialogContentRef}
-      >
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <div>
-            <DialogTitle className="text-2xl">Create New Shipment</DialogTitle>
-            <DialogDescription>
-              Enter shipment details to create your shipment.
-            </DialogDescription>
-          </div>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={handleDialogChange}>
+        <DialogContent 
+          className={cn(
+            "w-full max-w-4xl",
+            "max-h-[85vh] overflow-y-auto"
+          )}
+          ref={dialogContentRef}
+        >
+          <DialogHeader className="flex flex-row items-center justify-between">
+            <div>
+              <DialogTitle className="text-2xl">Create New Shipment</DialogTitle>
+              <DialogDescription>
+                Enter shipment details to create your shipment.
+              </DialogDescription>
+            </div>
+          </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Sender details */}
-          <div className="space-y-4">
-            <h3 className="font-medium text-lg">Sender Details</h3>
-            <div className="grid gap-2">
-              <Label htmlFor="fromName">Full Name</Label>
-              <Input 
-                id="fromName" 
-                name="fromName" 
-                value={formData.fromName}
-                onChange={handleChange}
-                placeholder="Enter sender's full name" 
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Sender details */}
+            <div className="space-y-4">
+              <h3 className="font-medium text-lg">Sender Details</h3>
               <div className="grid gap-2">
-                <Label htmlFor="fromEmail">Email Address</Label>
+                <Label htmlFor="fromName">Full Name</Label>
                 <Input 
-                  id="fromEmail" 
-                  name="fromEmail" 
-                  type="email"
-                  value={formData.fromEmail}
+                  id="fromName" 
+                  name="fromName" 
+                  value={formData.fromName}
                   onChange={handleChange}
-                  placeholder="Enter sender's email address" 
+                  placeholder="Enter sender's full name" 
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="fromPhone">Phone Number</Label>
-                <Input 
-                  id="fromPhone" 
-                  name="fromPhone" 
-                  type="tel"
-                  value={formData.fromPhone}
-                  onChange={handleChange}
-                  placeholder="Enter sender's phone number" 
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="grid gap-2">
+                  <Label htmlFor="fromEmail">Email Address</Label>
+                  <Input 
+                    id="fromEmail" 
+                    name="fromEmail" 
+                    type="email"
+                    value={formData.fromEmail}
+                    onChange={handleChange}
+                    placeholder="Enter sender's email address" 
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="fromPhone">Phone Number</Label>
+                  <Input 
+                    id="fromPhone" 
+                    name="fromPhone" 
+                    type="tel"
+                    value={formData.fromPhone}
+                    onChange={handleChange}
+                    placeholder="Enter sender's phone number" 
+                  />
+                </div>
               </div>
-            </div>
             <div className="grid gap-2">
               <Label htmlFor="fromStreet">Street Address</Label>
               <Input 
@@ -672,7 +706,17 @@ function CreateShipmentDialog({ open, onOpenChange }) {
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+      
+      {/* Payment Dialog */}
+      <PaymentDialog
+        open={showPaymentDialog}
+        onOpenChange={setShowPaymentDialog}
+        amount={price || 0}
+        orderId={createdShipmentId}
+        onSuccess={handlePaymentSuccess}
+      />
+    </>
   );
 }
 

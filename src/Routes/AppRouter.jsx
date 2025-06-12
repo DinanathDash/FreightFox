@@ -3,11 +3,13 @@ import { useAuth } from '../Context/AuthContext';
 import AuthForm from '../Components/Auth/AuthForm';
 import DashboardPage from '../Pages/Dashboard/DashboardPage';
 import ShipmentPage from '../Pages/Shipment';
+import PaymentPage from '../Pages/Payment';
 import HelpPage from '../Pages/Help';
 import SupportPage from '../Pages/Support';
 import SettingsPage from '../Pages/Settings';
 import SessionTimeout from '../Components/Auth/SessionTimeout';
 import SessionExpiryModal from '../Components/Auth/SessionExpiryModal';
+import LiveChat from '../Components/Support/LiveChat';
 
 function PrivateRoute({ children }) {
   const { currentUser } = useAuth();
@@ -23,6 +25,7 @@ function AppRouter() {
         <>
           <SessionTimeout />
           <SessionExpiryModal />
+          <LiveChat />
         </>
       )}
       <Routes>
@@ -48,6 +51,15 @@ function AppRouter() {
           element={
             <PrivateRoute>
               <ShipmentPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/payments"
+          element={
+            <PrivateRoute>
+              <PaymentPage />
             </PrivateRoute>
           }
         />

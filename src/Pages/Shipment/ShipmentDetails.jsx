@@ -3,9 +3,21 @@ import { Card, CardContent } from "../../Components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../Components/ui/tabs";
 import TimelineTracker from '../../Components/Shipment/TimelineTracker.jsx';
 import TrackingMap from '../../Components/Shipment/TrackingMap.jsx';
+import PaymentSummary from '../../Components/Payment/PaymentSummary.jsx';
 
 function ShipmentDetails({ shipment, initialTab = "details" }) {
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [updatedShipment, setUpdatedShipment] = useState(null);
+  
+  // Handle payment completion
+  const handlePaymentComplete = (paymentDetails) => {
+    // Update local state to reflect paid status
+    setUpdatedShipment({
+      ...shipment,
+      status: "Processing",
+      isPaid: true
+    });
+  };
 
   // CSS utility classes for consistent spacing and text size
   const labelClass = "text-gray-500 text-sm";
@@ -46,8 +58,11 @@ function ShipmentDetails({ shipment, initialTab = "details" }) {
   const processShipmentForDisplay = (shipment) => {
     if (!shipment) return null;
     
+    // Use updated shipment if available, otherwise use the original
+    const shipmentToProcess = updatedShipment || shipment;
+    
     // Create a processed copy
-    const processed = { ...shipment };
+    const processed = { ...shipmentToProcess };
     
     // Handle address display - support both sender/recipient and from/to structures
     if (shipment.sender && shipment.sender.address) {
@@ -143,6 +158,7 @@ function ShipmentDetails({ shipment, initialTab = "details" }) {
         <TabsList className="mb-2">
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="tracking">Tracking</TabsTrigger>
+          <TabsTrigger value="payment">Payment</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
@@ -280,6 +296,13 @@ function ShipmentDetails({ shipment, initialTab = "details" }) {
           />
         </TabsContent>
 
+        <TabsContent value="payment" className="space-y-2">
+          <PaymentSummary 
+            order={updatedShipment || shipment} 
+            onPaymentComplete={handlePaymentComplete}
+          />
+        </TabsContent>
+        
         <TabsContent value="documents" className="space-y-2">
           <Card className="overflow-hidden">
             <CardContent className="py-2 px-3">

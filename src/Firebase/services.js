@@ -21,8 +21,20 @@ import { getUserDocRef } from './enforceAuthIdStrategy.js';
 // Import user services
 import { updateUserProfile, deleteUserAccount } from './userServices.js';
 
+// Import payment services
+import { 
+  addPayment, 
+  getUserPayments, 
+  getPaymentById, 
+  getPaymentByOrderId, 
+  deletePayment 
+} from './paymentServices.js';
+
 // Export user services alongside other services
 export { updateUserProfile, deleteUserAccount };
+
+// Export payment services
+export { addPayment, getUserPayments, getPaymentById, getPaymentByOrderId, deletePayment };
 
 // Get user by ID
 export async function getUserById(userId) {
@@ -709,3 +721,17 @@ export async function addTicketReply(ticketId, replyData) {
     throw error;
   }
 }
+
+// Note: All payment functions have been moved to paymentServices.js
+// They are already imported at the top of this file:
+//
+// import { 
+//   addPayment, 
+//   getUserPayments, 
+//   getPaymentById, 
+//   getPaymentByOrderId, 
+//   deletePayment 
+// } from './paymentServices.js';
+//
+// And re-exported:
+// export { addPayment, getUserPayments, getPaymentById, getPaymentByOrderId, deletePayment };

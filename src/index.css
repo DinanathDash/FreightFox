@@ -20,6 +20,39 @@ button, a, [role="button"], .cursor-pointer {
   cursor: pointer !important;
 }
 
+/* Payment animation keyframes */
+@keyframes slide-right {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(40px); opacity: 0; }
+}
+
+@keyframes slide-left {
+  0% { transform: translateX(0); opacity: 0; }
+  100% { transform: translateX(-40px); opacity: 1; }
+}
+
+@keyframes grow-width {
+  0% { width: 0%; opacity: 0; }
+  100% { width: 50px; opacity: 1; }
+}
+
+.animate-slide-right {
+  animation: slide-right 0.5s forwards;
+}
+
+.animate-slide-left {
+  animation: slide-left 0.5s forwards;
+}
+
+.animate-grow-width {
+  animation: grow-width 0.7s forwards;
+}
+
+/* Custom colors for payment elements */
+.primary-50 {
+  background-color: rgba(var(--primary), 0.05);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
