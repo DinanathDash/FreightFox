@@ -1,6 +1,19 @@
 import React from 'react';
 
+// Event bus for cross-component communication
+export const chatEvents = {
+  openChat: () => {
+    // Create a custom event to trigger chat opening
+    const event = new CustomEvent('openLiveChat');
+    window.dispatchEvent(event);
+  }
+};
+
 function ContactMethods() {
+  const handleStartChat = () => {
+    chatEvents.openChat();
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="bg-blue-50 p-4 rounded-lg flex items-center support-contact-card">
@@ -25,7 +38,7 @@ function ContactMethods() {
         </div>
         <div>
           <h3 className="font-semibold text-green-900">Email Support</h3>
-          <p className="text-green-700">support@freightfox.com</p>
+          <p className="text-green-700">freightfox@outlook.com</p>
           <p className="text-sm text-green-600">24/7 support</p>
         </div>
       </div>
@@ -41,7 +54,12 @@ function ContactMethods() {
         <div>
           <h3 className="font-semibold text-purple-900">Live Chat</h3>
           <p className="text-purple-700">Available Now</p>
-          <button className="text-sm text-white bg-purple-600 px-2 py-1 rounded mt-1">Start Chat</button>
+          <button 
+            onClick={handleStartChat}
+            className="text-sm text-white bg-purple-600 px-2 py-1 rounded mt-1 hover:bg-purple-700"
+          >
+            Start Chat
+          </button>
         </div>
       </div>
     </div>

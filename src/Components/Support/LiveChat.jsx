@@ -9,6 +9,19 @@ function LiveChat() {
   const [isChatActive, setIsChatActive] = useState(false);
   const [agentName, setAgentName] = useState('');
   const messagesEndRef = useRef(null);
+  
+  // Listen for custom events to open chat from other components
+  useEffect(() => {
+    const handleOpenChat = () => {
+      setIsChatOpen(true);
+    };
+    
+    window.addEventListener('openLiveChat', handleOpenChat);
+    
+    return () => {
+      window.removeEventListener('openLiveChat', handleOpenChat);
+    };
+  }, []);
 
   // Simulate a chat agent connecting
   useEffect(() => {
@@ -232,7 +245,7 @@ function LiveChat() {
               <div key={msg.id} className="mb-4">
                 {msg.sender === 'system' ? (
                   <div className="text-center">
-                    <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
+                    <span className="text-xs text-gray-600 px-2 py-1">
                       {msg.content}
                     </span>
                   </div>
