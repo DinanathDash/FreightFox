@@ -78,7 +78,7 @@ async function createFirestoreUsers(emails, uidMapping = {}) {
         
         // Use the Firebase Auth UID as document ID
         await setDoc(doc(db, 'Users', uid), userData);
-        console.log(`Created user profile for ${user.email} with ID ${uid}`);
+        console.log(`Created user profile for ${user.email}`);
         
         // Add to created users list
         createdUsers.push({...userData, id: uid});

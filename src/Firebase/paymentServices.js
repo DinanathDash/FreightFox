@@ -46,7 +46,6 @@ export async function addPayment(paymentData) {
 
     // Add to Payments collection
     const docRef = await addDoc(collection(db, "Payments"), data);
-    console.log('Payment added with ID:', docRef.id);
     
     // Update the order status to "Processing" now that it's paid
     let orderUpdateSuccess = false;
@@ -73,7 +72,6 @@ export async function addPayment(paymentData) {
           'payment.id': docRef.id,
           'payment.details': paymentData.paymentDetails || {}
         });
-        console.log('Order updated with payment info:', orderDoc.id);
         orderUpdateSuccess = true;
       } else {
         // If not found by orderId field, try by document ID
@@ -93,10 +91,9 @@ export async function addPayment(paymentData) {
             'payment.id': docRef.id,
             'payment.details': paymentData.paymentDetails || {}
           });
-          console.log('Order updated with payment info (by ID):', paymentData.orderId);
           orderUpdateSuccess = true;
         } else {
-          console.warn(`Order with ID ${paymentData.orderId} not found for payment update`);
+          // Order not found for payment update
         }
       }
     } catch (orderUpdateError) {

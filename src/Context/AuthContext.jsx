@@ -115,11 +115,7 @@ export function AuthProvider({ children }) {
     // Sync Google user with Firestore
     await syncUserWithFirestore(result.user);
     
-    console.log("Google sign in successful with profile:", {
-      displayName: result.user.displayName,
-      email: result.user.email,
-      photoURL: result.user.photoURL,
-    });
+    console.log("Google sign in successful with profile.");
     
     startSessionTimer();
     return result;

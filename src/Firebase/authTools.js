@@ -56,9 +56,7 @@ export function checkAuthStatus() {
  */
 export async function loginToFirebase() {
   try {
-    console.log('==============================================');
-    console.log('Firebase Authentication Login');
-    console.log('==============================================');
+    console.log('Firebase Authentication Login\n');
     
     // Check if already logged in
     const currentUser = await checkAuthStatus();
@@ -85,7 +83,6 @@ export async function loginToFirebase() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log(`Logged in successfully as ${userCredential.user.email}`);
-      console.log(`User ID: ${userCredential.user.uid}`);
       return true;
     } catch (error) {
       console.error('Login failed:', error.message);

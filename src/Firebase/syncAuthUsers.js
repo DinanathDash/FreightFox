@@ -30,10 +30,8 @@ const envPath = resolve(rootDir, '.env');
 
 // Load environment variables
 if (fs.existsSync(envPath)) {
-  console.log('Found .env file, loading environment variables');
   dotenv.config({ path: envPath });
 } else {
-  console.log('.env file not found, will try to use process.env directly');
   dotenv.config();
 }
 
@@ -48,24 +46,20 @@ if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
 // Initialize Firebase Admin SDK
 let admin;
 try {
-  console.log('Initializing Firebase Admin with service account...');
   let serviceAccount;
   
   if (fs.existsSync(serviceAccountPath)) {
-    console.log(`Using service account file: ${serviceAccountPath}`);
     serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
   } else {
-    console.log('Service account file not found. Looking for environment variables...');
     // Try to use environment variables for service account
     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
       try {
         serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        console.log('Using service account from FIREBASE_SERVICE_ACCOUNT environment variable');
       } catch (e) {
         console.error('Error parsing FIREBASE_SERVICE_ACCOUNT:', e);
       }
     } else {
-      console.error('No service account available. Cannot access Firebase Authentication users.');
+      // No service account available
       throw new Error('Service account required to list auth users');
     }
   }
@@ -79,7 +73,6 @@ try {
     auth: () => import('firebase-admin/auth').then(auth => auth.getAuth(adminApp)),
     firestore: getFirestore(adminApp)
   };
-  console.log('Firebase Admin SDK initialized successfully');
 } catch (error) {
   console.error('Failed to initialize Firebase Admin SDK:', error);
   throw error;
@@ -90,8 +83,6 @@ try {
  */
 async function getAuthUsers() {
   try {
-    console.log('Fetching users from Firebase Authentication...');
-    
     const authInstance = await admin.auth();
     const maxResults = 1000; // Adjust as needed
     let users = [];
@@ -99,8 +90,6 @@ async function getAuthUsers() {
     // List all users (Firebase Authentication limits to 1000 users per request)
     let listUsersResult = await authInstance.listUsers(maxResults);
     users = users.concat(listUsersResult.users);
-    
-    console.log(`Found ${users.length} users in Firebase Authentication`);
     return users;
   } catch (error) {
     console.error('Error fetching users from Firebase Authentication:', error);
@@ -127,8 +116,6 @@ async function checkUserExistsInFirestore(uid) {
  */
 async function syncUsersToFirestore() {
   try {
-    console.log('Starting user sync from Authentication to Firestore...');
-    
     // Get users from Authentication
     const authUsers = await getAuthUsers();
     
@@ -167,16 +154,14 @@ async function syncUsersToFirestore() {
         }
         
         // Set document in Firestore using UID as document ID
-        console.log(`Syncing user: ${email} (${uid})`);
         await setDoc(doc(db, 'Users', uid), userData, { merge: true });
         
         syncedUsers.push({ id: uid, ...userData });
       } catch (error) {
-        console.error(`Error syncing user ${authUser.uid}:`, error);
+        console.error(`Error syncing user `, error);
       }
     }
     
-    console.log(`Successfully synced ${syncedUsers.length} users to Firestore`);
     return { success: true, userCount: syncedUsers.length, users: syncedUsers };
     
   } catch (error) {

@@ -1,11 +1,61 @@
-/**
- * Shared Firebase configuration for both browser and Node environments
- * This file replaces separate configurations in Config.js, nodeConfig.js, and seedConfig.js
- */
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
+
+// Disable Firebase internal console logs
+if (window.console) {
+  // Save original console methods
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
+
+  // Filter Firebase logs
+  console.log = function(...args) {
+    if (args.length > 0 && 
+        (typeof args[0] === 'string' && 
+         (args[0].includes('Firebase') || 
+          args[0].includes('Firestore') || 
+          args[0].includes('user') || 
+          args[0].includes('User') || 
+          args[0].includes('Auth')))) {
+      // Skip Firebase-related logs
+      return;
+    }
+    originalConsoleLog.apply(console, args);
+  };
+  
+  console.error = function(...args) {
+    if (args.length > 0 && 
+        (typeof args[0] === 'string' && 
+         (args[0].includes('Firebase') || 
+          args[0].includes('Firestore') || 
+          args[0].includes('user') || 
+          args[0].includes('User') || 
+          args[0].includes('Auth')))) {
+      // Skip Firebase-related errors
+      return;
+    }
+    originalConsoleError.apply(console, args);
+  };
+
+  console.warn = function(...args) {
+    if (args.length > 0 && 
+        (typeof args[0] === 'string' && 
+         (args[0].includes('Firebase') || 
+          args[0].includes('Firestore') || 
+          args[0].includes('user') || 
+          args[0].includes('User') || 
+          args[0].includes('Auth') ||
+          args[0].includes('ResponsiveContainer') ||
+          args[0].includes('width') ||
+          args[0].includes('height')))) {
+      // Skip Firebase-related warnings and chart warnings
+      return;
+    }
+    originalConsoleWarn.apply(console, args);
+  };
+}
 
 // Check if running in browser or Node environment
 const isBrowser = typeof window !== 'undefined';

@@ -23,8 +23,7 @@ export async function getAuthenticatedUsers() {
     userSnapshot.forEach(doc => {
       users.push({ id: doc.id, ...doc.data() });
     });
-    
-    console.log(`Found ${users.length} authenticated users`);
+
     return users;
   } catch (error) {
     console.error('Error fetching authenticated users:', error);
@@ -44,11 +43,9 @@ export async function getUserById(userId) {
     if (userDoc.exists()) {
       return { id: userDoc.id, ...userDoc.data() };
     } else {
-      console.log(`User with ID ${userId} not found`);
       return null;
     }
   } catch (error) {
-    console.error(`Error fetching user ${userId}:`, error);
     throw error;
   }
 }

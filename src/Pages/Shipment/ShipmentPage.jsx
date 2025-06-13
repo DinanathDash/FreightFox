@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../Components/ui/tabs";
 import { toast } from "sonner";
 import { getAllOrders, getOrdersByDateRange } from '../../Firebase/services.js';
-import { ensureSampleDataExists } from '../../Firebase/seedDemoData.js';
 import TimelineTracker from '../../Components/Shipment/TimelineTracker.jsx';
 import DateRangeDialog from '../../Components/Dashboard/DateRangeDialog';
 import FiltersDialog from '../../Components/Dashboard/FiltersDialog';
@@ -36,28 +35,15 @@ function ShipmentPage() {
     const fetchShipments = async () => {
       setLoading(true);
       try {
-        console.log("Fetching all orders...");
-        
-        // Check if we have any data, and if not, add sample data
-        await ensureSampleDataExists();
-        
         const orders = await getAllOrders();
-        console.log(`Fetched ${orders.length} orders`);
-        
-        // Log the first order to debug
-        if (orders.length > 0) {
-          console.log("First order sample:", orders[0]);
-        }
         
         setShipments(orders);
         setFilteredShipments(orders);
 
         if (orders.length > 0) {
           // Set the first order as active
-          console.log("Setting active order ID to:", orders[0].orderId || orders[0].id);
           setActiveOrderId(orders[0].orderId || orders[0].id);
         } else {
-          console.log("No orders found in the database");
           toast.error("Could not fetch shipments");
         }
       } catch (error) {
@@ -79,7 +65,6 @@ function ShipmentPage() {
         setLoading(true);
         try {
           const orders = await getAllOrders();
-          console.log(`Fetched all ${orders.length} orders after date filter reset`);
           setShipments(orders);
           setFilteredShipments(orders);
         } catch (error) {
@@ -98,11 +83,6 @@ function ShipmentPage() {
         console.log("Missing date range information, skipping filter");
         return;
       }
-
-      console.log("Applying date range filter:", {
-        startDate: customDateRange.startDate instanceof Date ? customDateRange.startDate.toISOString() : customDateRange.startDate,
-        endDate: customDateRange.endDate instanceof Date ? customDateRange.endDate.toISOString() : customDateRange.endDate
-      });
       
       setLoading(true);
       try {
@@ -113,27 +93,15 @@ function ShipmentPage() {
         const end = endDate instanceof Date ? endDate : new Date(endDate);
         
         if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-          console.error("Invalid date objects:", { start, end });
           throw new Error("Invalid date range");
         }
         
         // Get orders for the specified date range
         const orders = await getOrdersByDateRange(null, start, end);
         
-        console.log(`Fetched ${orders.length} orders for date range:`, {
-          startDate: start.toISOString(),
-          endDate: end.toISOString()
-        });
-        
         if (orders.length === 0) {
-          console.log("No orders found in the specified date range");
           toast.warning("No shipments found in the selected date range");
         } else {
-          console.log("First order timestamp:", 
-            orders[0].timestamp instanceof Date ? orders[0].timestamp.toISOString() : 
-            typeof orders[0].timestamp === 'object' ? 'Timestamp object' : 
-            orders[0].timestamp || 'Unknown');
-          
           toast.success(`Found ${orders.length} shipments in the selected date range`);
         }
         
@@ -144,7 +112,6 @@ function ShipmentPage() {
         setActiveFilters({ status: null, category: null });
         setActiveFilter("all");
       } catch (error) {
-        console.error("Error applying date range filter:", error);
         toast.error("Failed to filter by date range");
         
         // Fallback to all orders
@@ -163,13 +130,6 @@ function ShipmentPage() {
 
   // Apply filters and sorting
   useEffect(() => {
-    console.log("Filter/Sort effect running with:", {
-      activeFilter,
-      activeFilters,
-      sortOrder,
-      shipments: shipments.length
-    });
-
     let result = [...shipments];
 
     // Apply tab filter
@@ -178,33 +138,25 @@ function ShipmentPage() {
         result = result.filter(order => 
           ["In Transit", "Shipped", "Processing", "Out for Delivery"].includes(order.status)
         );
-        console.log(`After transit filter: ${result.length} orders`);
       } else if (activeFilter === "delivered") {
         result = result.filter(order => order.status === "Delivered");
-        console.log(`After delivered filter: ${result.length} orders`);
       }
       else if (activeFilter === "canceled") {
         result = result.filter(order => order.status === "Cancelled");
-        console.log(`After canceled filter: ${result.length} orders`);
       }
     }
 
     // Apply status filter
     if (activeFilters.status) {
-      console.log(`Applying status filter: ${activeFilters.status}`);
       result = result.filter(order => order.status === activeFilters.status);
-      console.log(`After status filter: ${result.length} orders`);
     }
 
     // Apply category filter
     if (activeFilters.category) {
-      console.log(`Applying category filter: ${activeFilters.category}`);
       result = result.filter(order => order.category === activeFilters.category);
-      console.log(`After category filter: ${result.length} orders`);
     }
 
     // Apply sorting
-    console.log(`Applying sort order: ${sortOrder}`);
     if (sortOrder === "latest") {
       result.sort((a, b) => new Date(b.timestamp || b.created || 0) - new Date(a.timestamp || a.created || 0));
     } else if (sortOrder === "oldest") {
@@ -222,7 +174,6 @@ function ShipmentPage() {
       result.sort((a, b) => (statusPriority[a.status] || 0) - (statusPriority[b.status] || 0));
     }
     
-    console.log(`Final filtered result: ${result.length} orders`);
     setFilteredShipments(result);
   }, [shipments, activeFilters, sortOrder, activeFilter]);
 
@@ -393,7 +344,7 @@ function ShipmentPage() {
 
       {/* Dialogs */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="min-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Shipment Details</DialogTitle>
             <DialogDescription>

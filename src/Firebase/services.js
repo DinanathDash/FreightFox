@@ -114,17 +114,12 @@ export async function getAllOrders(filter = null) {
       );
     }
     
-    console.log("Executing query for getAllOrders with filter:", filter);
     const querySnapshot = await getDocs(q);
     const orders = [];
     
-    console.log(`Found ${querySnapshot.size} orders in the database`);
-    
-    // If no data was found in Orders collection, try logging the collections that do exist
+    // If no data was found in Orders collection
     if (querySnapshot.empty) {
-      console.log("Orders collection is empty, listing available collections...");
       const collectionsSnapshot = await getDocs(collection(db, 'Orders'));
-      console.log(`Collections found: ${collectionsSnapshot.size}`);
       
       // Fallback to get at least something to display
       // Try to get data from a backup location or show sample data
@@ -169,10 +164,6 @@ export async function getAllOrders(filter = null) {
       orders.push(enhancedOrder);
     });
     
-    console.log(`Processed ${orders.length} orders with enhanced data`);
-    if (orders.length > 0) {
-      console.log("Sample order structure:", JSON.stringify(orders[0], null, 2));
-    }
     
     return orders;
   } catch (error) {
@@ -400,23 +391,12 @@ export async function getUserMonthlyOrderStats(userId) {
 // Get orders by date range - useful for fetching historical data
 export async function getOrdersByDateRange(userId = null, startDate, endDate) {
   try {
-    console.log("getOrdersByDateRange called with:", {
-      userId,
-      startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
-      endDate: endDate instanceof Date ? endDate.toISOString() : endDate
-    });
-    
     let q;
     const ordersCollection = collection(db, 'Orders');
     
     // Convert dates to Firestore Timestamps
     const startTimestamp = Timestamp.fromDate(startDate);
     const endTimestamp = Timestamp.fromDate(endDate);
-    
-    console.log("Using Firestore timestamps:", {
-      startTimestamp: startTimestamp.toDate().toISOString(),
-      endTimestamp: endTimestamp.toDate().toISOString()
-    });
     
     // Try different timestamp field names since the data might be inconsistent
     // First try with 'createdAt'
@@ -440,7 +420,6 @@ export async function getOrdersByDateRange(userId = null, startDate, endDate) {
       }
       
       const querySnapshot = await getDocs(q);
-      console.log(`Found ${querySnapshot.size} orders using 'createdAt' field`);
       
       if (!querySnapshot.empty) {
         // If we got results, use them
@@ -480,7 +459,6 @@ export async function getOrdersByDateRange(userId = null, startDate, endDate) {
       }
       
       const querySnapshot = await getDocs(q);
-      console.log(`Found ${querySnapshot.size} orders using 'timestamp' field`);
       
       const orders = [];
       querySnapshot.forEach((doc) => {
@@ -489,13 +467,6 @@ export async function getOrdersByDateRange(userId = null, startDate, endDate) {
         const orderTimestamp = orderData.timestamp instanceof Timestamp ? 
           orderData.timestamp.toDate() : 
           (typeof orderData.timestamp === 'number' ? new Date(orderData.timestamp) : new Date(orderData.timestamp || 0));
-          
-        // Debug logging to check what timestamps we're working with
-        console.log("Order timestamp:", {
-          id: doc.id,
-          timestamp: orderTimestamp,
-          inRange: orderTimestamp >= startDate && orderTimestamp <= endDate
-        });
           
         if (orderTimestamp >= startDate && orderTimestamp <= endDate) {
           const enhancedOrder = enhanceOrderWithCoordinates({
@@ -513,8 +484,6 @@ export async function getOrdersByDateRange(userId = null, startDate, endDate) {
       console.warn("Error querying with timestamp field:", error);
     }
     
-    // If we reach here, both queries failed or returned no results
-    console.log("No orders found with date filters, returning all orders");
     // As a fallback, return all orders and filter in memory
     const allOrdersQuery = query(ordersCollection, orderBy('timestamp', 'desc'));
     const querySnapshot = await getDocs(allOrdersQuery);
@@ -605,7 +574,6 @@ export async function createSupportTicket(ticketData) {
 // Get all tickets for a specific user
 export async function getTicketsByUserId(userId) {
   try {
-    console.log('Fetching tickets for user ID:', userId);
     // First try with the compound query that requires an index
     try {
       const q = query(
@@ -614,15 +582,12 @@ export async function getTicketsByUserId(userId) {
         orderBy('createdAt', 'desc')
       );
       
-      console.log('Executing Firestore query for tickets with index...');
       const querySnapshot = await getDocs(q);
-      console.log('Query returned', querySnapshot.size, 'tickets');
       
       const tickets = [];
       
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log('Ticket found:', doc.id, data);
         tickets.push({ id: doc.id, ...data });
       });
       
@@ -636,9 +601,7 @@ export async function getTicketsByUserId(userId) {
         where('userId', '==', userId)
       );
       
-      console.log('Executing fallback Firestore query for tickets...');
       const querySnapshot = await getDocs(simpleQ);
-      console.log('Fallback query returned', querySnapshot.size, 'tickets');
       
       const tickets = [];
       
@@ -721,17 +684,3 @@ export async function addTicketReply(ticketId, replyData) {
     throw error;
   }
 }
-
-// Note: All payment functions have been moved to paymentServices.js
-// They are already imported at the top of this file:
-//
-// import { 
-//   addPayment, 
-//   getUserPayments, 
-//   getPaymentById, 
-//   getPaymentByOrderId, 
-//   deletePayment 
-// } from './paymentServices.js';
-//
-// And re-exported:
-// export { addPayment, getUserPayments, getPaymentById, getPaymentByOrderId, deletePayment };

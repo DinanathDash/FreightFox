@@ -135,7 +135,7 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
     if (demo) {
       setCardDetails(demo);
       setDetectedCardType(cardType);
-      toast.info(`Demo ${cardType.charAt(0).toUpperCase() + cardType.slice(1)} card details filled`);
+      toast.info(`${cardType.charAt(0).toUpperCase() + cardType.slice(1)} card details filled`);
     }
   };
 

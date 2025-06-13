@@ -6,10 +6,7 @@ This directory contains all Firebase-related functionality for FreightFox, inclu
 
 - **`sharedConfig.js`**: Central configuration for Firebase that works in both browser and Node.js environments
 - **`authTools.js`**: Authentication utilities for command line and programmatic use
-- **`userTools.js`**: User management and diagnostic functions
-- **`userFixTools.js`**: Utilities for fixing user data issues
 - **`enforceAuthIdStrategy.js`**: Utilities to ensure consistent user ID management
-- **`orderGenerator.js`**: Functions for generating test orders
 - **`services.js`**: Core Firebase service functions used by the app
 - **`tools/`**: Command line scripts and utilities for Firebase operations
   - See [Tools README](tools/README.md) for details on the available scripts

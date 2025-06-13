@@ -357,7 +357,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
       <Dialog open={open} onOpenChange={handleDialogChange}>
         <DialogContent 
           className={cn(
-            "w-full max-w-4xl",
+            "w-full min-w-3xl",
             "max-h-[85vh] overflow-y-auto"
           )}
           ref={dialogContentRef}

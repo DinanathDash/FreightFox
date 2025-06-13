@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useTickets } from '../../hooks/useTickets';
@@ -24,7 +24,14 @@ function SupportPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const { tickets, isLoading, addTicket } = useTickets();
   
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
+    defaultValues: {
+      priority: "high",
+      category: "shipment-issue",
+      name: "Dinanath Dash",
+      email: "dashdinanath056@gmail.com"
+    }
+  });
   
   const onSubmitSupportTicket = async (data) => {
     setIsSubmitting(true);
@@ -59,6 +66,18 @@ function SupportPage() {
     setTicketCreated(false);
     setTicketNumber("");
   };
+  
+  // Effect to set initial form values
+  useEffect(() => {
+    // Initialize form values for dropdown elements
+    setValue("priority", "high");
+    
+    // For demonstration, we're pre-setting the shipment issue category
+    // This simulates what happens when a user has already selected a category
+    if (!errors.category) {
+      setValue("category", "shipment-issue");
+    }
+  }, [setValue]);
 
   const supportCategories = [
     { value: "shipment-issue", label: "Shipment Issues" },
@@ -215,10 +234,13 @@ function SupportPage() {
                         <div className="space-y-2">
                           <Label htmlFor="category">Category</Label>
                           <Select 
-                            {...register("category", { required: "Please select a category" })}
+                            onValueChange={(value) => {
+                              const event = { target: { value } };
+                              register("category", { required: "Please select a category" }).onChange(event);
+                            }}
                             defaultValue=""
                           >
-                            <SelectTrigger>
+                            <SelectTrigger id="category">
                               <SelectValue placeholder="Select a category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -232,14 +254,18 @@ function SupportPage() {
                           {errors.category && (
                             <p className="text-sm text-red-500">{errors.category.message}</p>
                           )}
+                          <input type="hidden" {...register("category", { required: "Please select a category" })} />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="priority">Priority</Label>
                           <Select 
-                            {...register("priority", { required: "Please select a priority" })}
-                            defaultValue="medium"
+                            onValueChange={(value) => {
+                              const event = { target: { value } };
+                              register("priority", { required: "Please select a priority" }).onChange(event);
+                            }}
+                            defaultValue="high"
                           >
-                            <SelectTrigger>
+                            <SelectTrigger id="priority">
                               <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
                             <SelectContent>
@@ -253,6 +279,7 @@ function SupportPage() {
                           {errors.priority && (
                             <p className="text-sm text-red-500">{errors.priority.message}</p>
                           )}
+                          <input type="hidden" {...register("priority", { required: "Please select a priority" })} />
                         </div>
                       </div>
                       

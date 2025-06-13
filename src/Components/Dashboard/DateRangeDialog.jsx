@@ -40,11 +40,6 @@ const DateRangeDialog = ({ open, onOpenChange, onDateRangeChange }) => {
         const endDate = new Date(date.from);
         endDate.setHours(23, 59, 59, 999);
         
-        console.log("Applying single-day date range:", {
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString()
-        });
-        
         onDateRangeChange({ 
           startDate: startDate, 
           endDate: endDate 
@@ -60,18 +55,12 @@ const DateRangeDialog = ({ open, onOpenChange, onDateRangeChange }) => {
       const endDate = new Date(date.to);
       endDate.setHours(23, 59, 59, 999);
       
-      console.log("Applying date range:", {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
-      });
-      
       onDateRangeChange({ 
         startDate: startDate, 
         endDate: endDate 
       });
       onOpenChange(false);
     } else {
-      console.warn("No start date selected");
       // Use current date as fallback
       const currentDate = new Date();
       const startDate = new Date(currentDate);

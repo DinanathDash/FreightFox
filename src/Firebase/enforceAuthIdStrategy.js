@@ -51,12 +51,10 @@ export async function storeUserWithAuthId(user, additionalData = {}) {
     if (userDoc.exists()) {
       // Update existing user (preserving existing fields)
       await setDoc(userRef, userData, { merge: true });
-      console.log(`Updated user ${user.uid} in Firestore`);
     } else {
       // Create new user
       userData.createdAt = serverTimestamp();
       await setDoc(userRef, userData);
-      console.log(`Created user ${user.uid} in Firestore`);
     }
     
     return {
