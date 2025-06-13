@@ -264,28 +264,28 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>Payment</CardTitle>
-        <CardDescription>
+    <Card className="w-full max-w-[95vw] sm:max-w-md mx-auto">
+      <CardHeader className="px-4 md:px-6">
+        <CardTitle className="text-xl md:text-2xl">Payment</CardTitle>
+        <CardDescription className="text-sm md:text-base">
           Complete your payment of ₹{amount?.toFixed(2) || '0.00'}
         </CardDescription>
       </CardHeader>
       {isProcessing ? (
-        <CardContent className="px-6 py-8">
+        <CardContent className="px-4 md:px-6 py-6 md:py-8">
           <PaymentProcessingAnimation
             cardType={detectedCardType || 'visa'}
             onComplete={handleAnimationComplete}
           />
         </CardContent>
       ) : (
-        <CardContent>
+        <CardContent className="px-3 sm:px-6">
           <Tabs defaultValue="card" onValueChange={setPaymentMethod}>
-            <TabsList className="inline-flex w-full justify-around bg-gray-50 p-1 rounded-lg">
+            <TabsList className="inline-flex w-full justify-around bg-gray-50 p-1 rounded-lg text-xs sm:text-sm overflow-x-auto">
               <TabsTrigger value="card" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
                 <div className="flex items-center gap-1.5">
                   <div className="flex items-center">
-                    <img src={VisaLogo} alt="Card" className="h-5 w-auto" />
+                    <img src={VisaLogo} alt="Card" className="h-4 sm:h-5 w-auto" />
                   </div>
                   <span>Card</span>
                 </div>
@@ -295,10 +295,10 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
               <TabsTrigger value="wallet" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Wallet</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="card" className="space-y-4 mt-4">
+            <TabsContent value="card" className="space-y-4 mt-3 sm:mt-4">
               <div className="flex justify-between items-center">
-                <p className="text-sm text-muted-foreground">Select card</p>
-                <div className="flex gap-3 items-center">
+                <p className="text-xs sm:text-sm text-muted-foreground">Select card</p>
+                <div className="flex gap-2 sm:gap-3 items-center">
                   {cardTypes.map(card => (
                     <button
                       key={card.id}
@@ -307,14 +307,14 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
                       onClick={() => fillDemoCard(card.id)}
                       title={`Use ${card.name} demo card`}
                     >
-                      <img src={card.logo} alt={card.name} className="h-6 w-auto" />
+                      <img src={card.logo} alt={card.name} className="h-5 sm:h-6 w-auto" />
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="card-number">Card Number</Label>
+                <Label htmlFor="card-number" className="text-xs sm:text-sm">Card Number</Label>
                 <div className="relative">
                   <Input
                     id="card-number"
@@ -322,7 +322,7 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
                     value={cardDetails.number}
                     onChange={handleCardNumberChange}
                     maxLength={19}
-                    className={`${validationErrors.cardNumber ? "border-red-500" : ""} ${detectedCardType ? "pr-12" : ""}`}
+                    className={`${validationErrors.cardNumber ? "border-red-500" : ""} ${detectedCardType ? "pr-12" : ""} text-sm`}
                   />
                   {detectedCardType && (
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -340,29 +340,29 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="cardholder-name">Cardholder Name</Label>
+                <Label htmlFor="cardholder-name" className="text-xs sm:text-sm">Cardholder Name</Label>
                 <Input
                   id="cardholder-name"
                   placeholder="John Doe"
                   value={cardDetails.name}
                   onChange={(e) => setCardDetails({ ...cardDetails, name: e.target.value })}
-                  className={validationErrors.cardName ? "border-red-500" : ""}
+                  className={validationErrors.cardName ? "border-red-500 text-sm" : "text-sm"}
                 />
                 {validationErrors.cardName && (
                   <p className="text-xs text-red-500 mt-1">{validationErrors.cardName}</p>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="expiry">Expiry Date</Label>
+                  <Label htmlFor="expiry" className="text-xs sm:text-sm">Expiry Date</Label>
                   <Input
                     id="expiry"
                     placeholder="MM/YY"
                     value={cardDetails.expiry}
                     onChange={handleExpiryChange}
                     maxLength={5}
-                    className={validationErrors.cardExpiry ? "border-red-500" : ""}
+                    className={validationErrors.cardExpiry ? "border-red-500 text-sm" : "text-sm"}
                   />
                   {validationErrors.cardExpiry && (
                     <p className="text-xs text-red-500 mt-1">{validationErrors.cardExpiry}</p>
@@ -370,7 +370,7 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="cvv">CVV</Label>
+                  <Label htmlFor="cvv" className="text-xs sm:text-sm">CVV</Label>
                   <Input
                     id="cvv"
                     type="password"
@@ -378,7 +378,7 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
                     value={cardDetails.cvv}
                     onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
                     maxLength={detectedCardType === 'amex' ? 4 : 3}
-                    className={validationErrors.cardCvv ? "border-red-500" : ""}
+                    className={validationErrors.cardCvv ? "border-red-500 text-sm" : "text-sm"}
                   />
                   {validationErrors.cardCvv && (
                     <p className="text-xs text-red-500 mt-1">{validationErrors.cardCvv}</p>
@@ -387,30 +387,30 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
               </div>
             </TabsContent>
 
-            <TabsContent value="upi" className="space-y-4 mt-4">
+            <TabsContent value="upi" className="space-y-4 mt-3 sm:mt-4">
               <div className="space-y-2">
-                <Label htmlFor="upi-id">UPI ID</Label>
+                <Label htmlFor="upi-id" className="text-xs sm:text-sm">UPI ID</Label>
                 <Input
                   id="upi-id"
                   placeholder="example@upi"
                   value={upiId}
                   onChange={(e) => setUpiId(e.target.value)}
-                  className={validationErrors.upi ? "border-red-500" : ""}
+                  className={validationErrors.upi ? "border-red-500 text-sm" : "text-sm"}
                 />
                 {validationErrors.upi && (
                   <p className="text-xs text-red-500 mt-1">{validationErrors.upi}</p>
                 )}
               </div>
-              <div className="flex items-center justify-center p-4">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex items-center justify-center p-2 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Enter your UPI ID to make the payment securely
                 </p>
               </div>
             </TabsContent>
 
-            <TabsContent value="netbanking" className="space-y-4 mt-4">
+            <TabsContent value="netbanking" className="space-y-4 mt-3 sm:mt-4">
               <div className="space-y-2">
-                <Label htmlFor="bank">Select Bank</Label>
+                <Label htmlFor="bank" className="text-xs sm:text-sm">Select Bank</Label>
                 <Select
                   value={netBankingBank}
                   onValueChange={setNetBankingBank}
@@ -430,23 +430,23 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
                   <p className="text-xs text-red-500 mt-1">{validationErrors.netbanking}</p>
                 )}
               </div>
-              <div className="flex items-center justify-center p-4">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex items-center justify-center p-2 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   You will be redirected to your bank's website to complete the payment
                 </p>
               </div>
             </TabsContent>
 
-            <TabsContent value="wallet" className="space-y-4 mt-4">
+            <TabsContent value="wallet" className="space-y-4 mt-3 sm:mt-4">
               <div className="space-y-4">
-                <Label>Select Wallet</Label>
-                <div className="grid grid-cols-2 gap-4">
+                <Label className="text-xs sm:text-sm">Select Wallet</Label>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   {wallets.map(wallet => (
                     <Button
                       key={wallet.id}
                       type="button"
                       variant="outline"
-                      className={`h-20 flex flex-col items-center justify-center gap-2 ${selectedWallet === wallet.id ? "border-primary" : ""} 
+                      className={`h-16 sm:h-20 flex flex-col items-center justify-center gap-1 sm:gap-2 ${selectedWallet === wallet.id ? "border-primary" : ""} 
                       ${validationErrors.wallet && !selectedWallet ? "border-red-500" : ""}`}
                       onClick={() => {
                         setSelectedWallet(wallet.id);
@@ -457,8 +457,8 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
                         toast.info(`${wallet.name} selected`);
                       }}
                     >
-                      <div className="text-xl">{wallet.logo}</div>
-                      <span className="text-xs">{wallet.name}</span>
+                      <div className="text-lg sm:text-xl">{wallet.logo}</div>
+                      <span className="text-[10px] sm:text-xs">{wallet.name}</span>
                     </Button>
                   ))}
                 </div>
@@ -466,8 +466,8 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
                   <p className="text-xs text-red-500 mt-1">{validationErrors.wallet}</p>
                 )}
               </div>
-              <div className="flex items-center justify-center p-4">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex items-center justify-center p-2 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   You will be redirected to the wallet app to complete your payment
                 </p>
               </div>
@@ -475,13 +475,13 @@ function PaymentForm({ amount, orderId, onPaymentSuccess, onCancel }) {
           </Tabs>
         </CardContent>
       )}
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 px-4 sm:px-6 py-4">
         {!isProcessing && (
           <>
-            <Button variant="outline" onClick={onCancel} disabled={loading}>
+            <Button variant="outline" onClick={onCancel} disabled={loading} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={loading}>
+            <Button onClick={handleSubmit} disabled={loading} className="w-full sm:w-auto order-1 sm:order-2">
               {loading ? "Processing..." : `Pay ₹${amount?.toFixed(2) || '0.00'}`}
             </Button>
           </>

@@ -12,20 +12,11 @@ function PaymentPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
 
   return (
-    <DashboardLayout>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Payments</h1>
-          <p className="text-muted-foreground">
-            Manage your payment methods and view transaction history
-          </p>
-        </div>
-      </div>
-
-      <Tabs defaultValue="history" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-4">
-          <TabsTrigger value="history">Payment History</TabsTrigger>
-          <TabsTrigger value="methods">Payment Methods</TabsTrigger>
+    <DashboardLayout>      
+      <Tabs defaultValue="history" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="mb-4 w-full sm:w-auto flex overflow-x-auto">
+          <TabsTrigger value="history" className="flex-1 sm:flex-none">Payment History</TabsTrigger>
+          <TabsTrigger value="methods" className="flex-1 sm:flex-none">Payment Methods</TabsTrigger>
         </TabsList>
         
         <TabsContent value="history" className="space-y-4">
@@ -37,16 +28,16 @@ function PaymentPage() {
             <CardHeader>
               <CardTitle>Saved Payment Methods</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-2 sm:px-6">
               <PaymentMethodSelector 
                 selectedMethod={selectedPaymentMethod} 
                 onSelect={setSelectedPaymentMethod} 
               />
               
-              <Separator className="my-6" />
+              <Separator className="my-4 sm:my-6" />
               
-              <div className="flex justify-end">
-                <Button>Save Preferences</Button>
+              <div className="flex justify-center sm:justify-end">
+                <Button className="w-full sm:w-auto">Save Preferences</Button>
               </div>
             </CardContent>
           </Card>
@@ -56,25 +47,25 @@ function PaymentPage() {
               <CardTitle>Payment Security</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-sm sm:text-base text-muted-foreground mb-4">
                 All payment information is encrypted and processed securely. 
                 We use industry-standard security measures to protect your data.
               </p>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <div className="text-xl mb-2">🔒</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 text-center">
+                <div className="p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <div className="text-lg sm:text-xl mb-2">🔒</div>
                   <h3 className="font-medium">Encryption</h3>
-                  <p className="text-sm text-muted-foreground">256-bit SSL encryption</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">256-bit SSL encryption</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <div className="text-xl mb-2">✓</div>
+                <div className="p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <div className="text-lg sm:text-xl mb-2">✓</div>
                   <h3 className="font-medium">PCI Compliant</h3>
-                  <p className="text-sm text-muted-foreground">Following security standards</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Following security standards</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <div className="text-xl mb-2">🛡️</div>
+                <div className="p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <div className="text-lg sm:text-xl mb-2">🛡️</div>
                   <h3 className="font-medium">Fraud Protection</h3>
-                  <p className="text-sm text-muted-foreground">24/7 monitoring</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">24/7 monitoring</p>
                 </div>
               </div>
             </CardContent>

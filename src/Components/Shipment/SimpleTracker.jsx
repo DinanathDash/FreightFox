@@ -112,12 +112,12 @@ function SimpleTracker({ orders, activeTrackingId: activeOrderId, setActiveTrack
               <div>
                 <p className="text-sm font-medium text-gray-500">Status</p>
                 <span className={`px-3 py-1 mt-1 inline-block rounded-full text-xs font-medium ${activeOrder.status?.toLowerCase() === 'delivered' ? 'bg-green-100 text-green-800' :
-                    activeOrder.status?.toLowerCase() === 'pending' ? 'bg-amber-100 text-amber-800' :
-                      activeOrder.status?.toLowerCase() === 'cancelled' ? 'bg-red-100 text-red-800' :
-                        activeOrder.status?.toLowerCase() === 'processing' ? 'bg-purple-100 text-purple-800' :
-                          activeOrder.status?.toLowerCase() === 'in transit' ? 'bg-blue-100 text-blue-800' :
-                            activeOrder.status?.toLowerCase() === 'out for delivery' ? 'bg-amber-100 text-amber-800' :
-                              'bg-gray-100 text-gray-800'
+                  activeOrder.status?.toLowerCase() === 'pending' ? 'bg-amber-100 text-amber-800' :
+                    activeOrder.status?.toLowerCase() === 'cancelled' ? 'bg-red-100 text-red-800' :
+                      activeOrder.status?.toLowerCase() === 'processing' ? 'bg-purple-100 text-purple-800' :
+                        activeOrder.status?.toLowerCase() === 'in transit' ? 'bg-blue-100 text-blue-800' :
+                          activeOrder.status?.toLowerCase() === 'out for delivery' ? 'bg-amber-100 text-amber-800' :
+                            'bg-gray-100 text-gray-800'
                   }`}>
                   {/* Ensure first letter is capitalized */}
                   {activeOrder.status?.charAt(0).toUpperCase() + activeOrder.status?.slice(1) || 'N/A'}

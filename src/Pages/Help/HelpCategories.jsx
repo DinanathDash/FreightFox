@@ -7,7 +7,7 @@ export function HelpCategories({ onCategoryClick }) {
       title: 'Account Management',
       description: 'Setting up and managing your account details',
       icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-8 sm:h-8">
           <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M20.5899 22C20.5899 18.13 16.7399 15 11.9999 15C7.25991 15 3.40991 18.13 3.40991 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -18,7 +18,7 @@ export function HelpCategories({ onCategoryClick }) {
       title: 'Shipping & Delivery',
       description: 'Everything about shipping and delivery processes',
       icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-8 sm:h-8">
           <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M8 12H16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M12 16V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -30,7 +30,7 @@ export function HelpCategories({ onCategoryClick }) {
       title: 'Payment & Billing',
       description: 'Payment methods, invoicing, and refunds',
       icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-8 sm:h-8">
           <path d="M2 8.50488H22" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M6 16.5049H8" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M10.5 16.5049H14.5" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
@@ -43,7 +43,7 @@ export function HelpCategories({ onCategoryClick }) {
       title: 'Tracking & Reports',
       description: 'How to track shipments and generate reports',
       icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-8 sm:h-8">
           <path d="M8.38086 12.0002L10.7909 14.4102L15.6209 9.58018" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M10.9998 2.83984C14.9998 2.83984 18.1698 5.02984 20.2498 8.63984" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M3.75 8.63C5.83 5.02 9 2.83 13 2.83" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -55,21 +55,21 @@ export function HelpCategories({ onCategoryClick }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6 mt-2 sm:mt-4 w-full overflow-hidden">
       {categories.map((category) => (
         <Card 
           key={category.id}
-          className="cursor-pointer hover:shadow-md transition-shadow category-card"
+          className="cursor-pointer hover:shadow-md transition-shadow category-card w-full"
           onClick={() => onCategoryClick(category.id)}
         >
-          <CardHeader className="flex items-center justify-center py-4">
-            <div className="bg-blue-50 p-4 rounded-full">
+          <CardHeader className="flex items-center justify-center py-2 sm:py-4 px-2 sm:px-4">
+            <div className="bg-blue-50 p-2 sm:p-4 rounded-full">
               <div className="text-blue-600">{category.icon}</div>
             </div>
           </CardHeader>
-          <CardContent className="text-center">
-            <h3 className="text-lg font-semibold mb-2">{category.title}</h3>
-            <p className="text-gray-600 text-sm">{category.description}</p>
+          <CardContent className="text-center pb-3 sm:pb-4 px-1 sm:px-4">
+            <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2 line-clamp-1">{category.title}</h3>
+            <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 max-w-full">{category.description}</p>
           </CardContent>
         </Card>
       ))}

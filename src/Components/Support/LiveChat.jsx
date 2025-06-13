@@ -177,7 +177,7 @@ function LiveChat() {
   return (
     <>
       {/* Chat button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-25 md:bottom-6 right-6 z-50">
         <button
           onClick={toggleChat}
           className={`rounded-full p-4 shadow-lg flex items-center justify-center transition-colors ${
@@ -201,7 +201,7 @@ function LiveChat() {
 
       {/* Chat window */}
       {isChatOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-96 rounded-lg shadow-xl bg-white overflow-hidden flex flex-col border">
+        <div className="fixed bottom-45 md:bottom-24 right-3 md:right-6 z-50 w-96 rounded-lg shadow-xl bg-white overflow-hidden flex flex-col border">
           {/* Chat header */}
           <div className="bg-blue-600 text-white p-4 flex items-center justify-between">
             <div className="flex items-center">
@@ -310,7 +310,7 @@ function LiveChat() {
       )}
       
       {/* CSS for typing indicator */}
-      <style jsx="true">{`
+      <style>{`
         .typing-indicator {
           display: flex;
           align-items: center;

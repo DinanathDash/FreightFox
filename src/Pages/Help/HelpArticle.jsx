@@ -11,8 +11,9 @@ function HelpArticle({ article }) {
 
   return (
     <Card>
-      <CardContent className="p-6">
-        <div className="help-article-content" dangerouslySetInnerHTML={createMarkup()} />
+      <CardContent className="p-4 sm:p-6">
+        <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">{article.title}</h1>
+        <div className="help-article-content text-sm sm:text-base" dangerouslySetInnerHTML={createMarkup()} />
       </CardContent>
     </Card>
   );

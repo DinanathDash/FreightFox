@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Card, CardContent } from "../../Components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../Components/ui/tabs";
 import TimelineTracker from '../../Components/Shipment/TimelineTracker.jsx';
-import TrackingMap from '../../Components/Shipment/TrackingMap.jsx';
 import PaymentSummary from '../../Components/Payment/PaymentSummary.jsx';
 
 function ShipmentDetails({ shipment, initialTab = "details" }) {

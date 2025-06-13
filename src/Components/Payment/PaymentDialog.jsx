@@ -70,47 +70,47 @@ function PaymentDialog({ open, onOpenChange, amount, orderId, onSuccess }) {
         <PaymentDialogOverlay />
         <DialogPrimitive.Content
           className={cn(
-            "fixed left-[50%] top-[50%] z-[60] grid w-full max-w-md -translate-x-1/2 -translate-y-1/2 gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg"
+            "fixed left-[50%] top-[50%] z-[60] grid w-[95vw] max-w-md -translate-x-1/2 -translate-y-1/2 gap-3 md:gap-4 border bg-background p-4 md:p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 rounded-lg"
           )}
         >
-          <DialogHeader>
-            <DialogTitle>
+          <DialogHeader className="space-y-1 md:space-y-1.5">
+            <DialogTitle className="text-lg md:text-xl">
               {paymentCompleted ? "Payment Successful" : "Complete Payment"}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs md:text-sm">
               {paymentCompleted 
                 ? `Your payment of ₹${amount.toFixed(2)} was processed successfully.`
                 : `Please complete your payment of ₹${amount.toFixed(2)}.`
               }
             </DialogDescription>
           </DialogHeader>
-          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+          <DialogPrimitive.Close className="absolute right-3 top-3 md:right-4 md:top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 md:h-4 md:w-4">
               <path d="M18 6 6 18M6 6l12 12"></path>
             </svg>
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         
         {paymentCompleted ? (
-          <div className="space-y-4">
-            <div className="rounded-lg bg-green-50 p-4 text-green-700 text-center">
-              <div className="flex items-center justify-center my-3">
+          <div className="space-y-3 md:space-y-4">
+            <div className="rounded-lg bg-green-50 p-3 md:p-4 text-green-700 text-center">
+              <div className="flex items-center justify-center my-2 md:my-3">
                 <div className="relative">
-                  <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-                    <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg className="h-7 w-7 md:h-10 md:w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <span className="animate-ping absolute top-0 left-0 h-16 w-16 rounded-full bg-green-200 opacity-50"></span>
+                  <span className="animate-ping absolute top-0 left-0 h-12 w-12 md:h-16 md:w-16 rounded-full bg-green-200 opacity-50"></span>
                 </div>
               </div>
-              <p className="font-medium text-lg">Payment Complete</p>
-              <p className="text-sm mt-2">Transaction ID: {paymentDetails?.id || 'TX' + Math.random().toString(36).substr(2, 9)}</p>
+              <p className="font-medium text-base md:text-lg">Payment Complete</p>
+              <p className="text-xs md:text-sm mt-2">Transaction ID: {paymentDetails?.id || 'TX' + Math.random().toString(36).substr(2, 9)}</p>
               <p className="text-xs mt-2">Amount: ₹{amount.toFixed(2)}</p>
               <p className="text-xs mt-2">A receipt has been sent to your email</p>
             </div>
             {showCloseButton && (
-              <Button onClick={handleClose} className="w-full">
+              <Button onClick={handleClose} className="w-full text-sm md:text-base py-1.5 md:py-2">
                 Continue
               </Button>
             )}

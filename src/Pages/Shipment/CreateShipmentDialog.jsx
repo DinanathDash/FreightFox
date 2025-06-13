@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogFooter
 } from "../../Components/ui/dialog";
-
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../Firebase/sharedConfig';
 import { useAuth } from '../../Context/AuthContext';
@@ -357,21 +356,21 @@ function CreateShipmentDialog({ open, onOpenChange }) {
       <Dialog open={open} onOpenChange={handleDialogChange}>
         <DialogContent 
           className={cn(
-            "w-full min-w-3xl",
-            "max-h-[85vh] overflow-y-auto"
+            "w-full max-w-[95vw] md:min-w-3xl",
+            "max-h-[85vh] overflow-y-auto p-4 md:p-6"
           )}
           ref={dialogContentRef}
         >
           <DialogHeader className="flex flex-row items-center justify-between">
             <div>
-              <DialogTitle className="text-2xl">Create New Shipment</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-xl md:text-2xl">Create New Shipment</DialogTitle>
+              <DialogDescription className="text-sm md:text-base">
                 Enter shipment details to create your shipment.
               </DialogDescription>
             </div>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             {/* Sender details */}
             <div className="space-y-4">
               <h3 className="font-medium text-lg">Sender Details</h3>
@@ -385,7 +384,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
                   placeholder="Enter sender's full name" 
                 />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="grid gap-2">
                   <Label htmlFor="fromEmail">Email Address</Label>
                   <Input 
@@ -419,7 +418,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
                 placeholder="Enter street address" 
               />
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="grid gap-2">
                 <Label htmlFor="fromCity">City</Label>
                 <Input 
@@ -441,7 +440,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="grid gap-2">
                 <Label htmlFor="fromPincode">Pincode</Label>
                 <Input 
@@ -478,7 +477,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
                 placeholder="Enter recipient's full name" 
               />
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="grid gap-2">
                 <Label htmlFor="toEmail">Email Address</Label>
                 <Input 
@@ -512,7 +511,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
                 placeholder="Enter street address" 
               />
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="grid gap-2">
                 <Label htmlFor="toCity">City</Label>
                 <Input 
@@ -534,7 +533,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="grid gap-2">
                 <Label htmlFor="toPincode">Pincode</Label>
                 <Input 
@@ -564,7 +563,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
         {/* Package details */}
         <div className="space-y-6">
           <h3 className="font-medium text-lg">Package Details</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             <div className="space-y-2">
               <Label htmlFor="weight">Weight (kg)</Label>
               <Input 
@@ -644,22 +643,22 @@ function CreateShipmentDialog({ open, onOpenChange }) {
         </div>
 
         {price && (
-          <div className="bg-muted p-4 rounded-lg mt-6">
-            <div className="flex justify-between items-center text-lg font-medium mb-2">
+          <div className="bg-muted p-3 md:p-4 rounded-lg mt-6">
+            <div className="flex justify-between items-center text-base md:text-lg font-medium mb-2">
               <span>Estimated Cost:</span>
               <span>₹{price.toFixed(2)}</span>
             </div>
             <Separator className="my-2" />
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
+            <div className="space-y-1 text-xs sm:text-sm">
+              <div className="flex justify-between flex-wrap">
                 <span>Base Price:</span>
                 <span>₹300.00</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between flex-wrap">
                 <span>Weight ({formData.weight} kg):</span>
                 <span>₹{(parseFloat(formData.weight || 1) * 50).toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between flex-wrap">
                 <span>Package Size ({formData.packageSize}):</span>
                 <span>
                   {formData.packageSize === 'Small' ? '×1.0' : 
@@ -668,7 +667,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
                    formData.packageSize === 'Extra Large' ? '×2.5' : '×1.0'}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between flex-wrap">
                 <span>Package Category ({formData.packageCategory}):</span>
                 <span>
                   {formData.packageCategory === 'Fragile' ? '×1.2' :
@@ -676,7 +675,7 @@ function CreateShipmentDialog({ open, onOpenChange }) {
                    formData.packageCategory === 'Perishable' ? '×1.4' : '×1.0'}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between flex-wrap">
                 <span>Service Type ({formData.serviceType}):</span>
                 <span>
                   {formData.serviceType === 'Express' ? '×1.5' :
@@ -686,21 +685,21 @@ function CreateShipmentDialog({ open, onOpenChange }) {
               </div>
             </div>
             <Separator className="my-2" />
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground text-center md:text-left">
               Formula: Base Price × Size Multiplier × Category Multiplier × Service Multiplier + Weight Cost
             </div>
           </div>
         )}
 
-        <div className="flex justify-between mt-6">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <div className="space-x-2">
-            <Button variant="outline" onClick={handleCalculatePrice}>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={handleCalculatePrice} className="w-full sm:w-auto">
               Calculate Price
             </Button>
-            <Button onClick={handleCreateShipment} disabled={loading}>
+            <Button onClick={handleCreateShipment} disabled={loading} className="w-full sm:w-auto">
               {loading ? "Processing..." : "Create Shipment"}
             </Button>
           </div>

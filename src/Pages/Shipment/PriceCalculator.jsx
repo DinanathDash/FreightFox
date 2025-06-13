@@ -39,7 +39,6 @@ function PriceCalculator() {
 
     // This would typically be an API call to calculate the shipping price
     // For this example, we'll use a simple calculation
-    
     setTimeout(() => {
       const { weight, length, width, height, packageType, serviceType } = formData;
       
@@ -70,8 +69,8 @@ function PriceCalculator() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-4 p-2 md:p-4 max-w-3xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="origin">Origin</Label>
           <Input 
@@ -114,7 +113,7 @@ function PriceCalculator() {
 
       <div className="space-y-2">
         <Label>Dimensions (cm)</Label>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-4">
           <Input 
             name="length"
             placeholder="Length" 
@@ -145,7 +144,7 @@ function PriceCalculator() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="packageType">Package Type</Label>
           <Select 
@@ -181,36 +180,36 @@ function PriceCalculator() {
         </div>
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button type="submit" className="w-full mt-6" disabled={loading}>
         {loading ? "Calculating..." : "Calculate Price"}
       </Button>
 
       {price && (
         <>
-          <Separator />
-          <div className="bg-gray-50 p-4 rounded-md">
+          <Separator className="my-6" />
+          <div className="bg-gray-50 p-3 md:p-4 rounded-md">
             <div className="text-center mb-3">
               <div className="text-gray-500">Estimated Price</div>
-              <div className="text-2xl font-bold">₹{price}</div>
+              <div className="text-xl md:text-2xl font-bold">₹{price}</div>
             </div>
             
             <Separator className="my-2" />
             
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
+            <div className="space-y-2 text-xs md:text-sm">
+              <div className="flex justify-between flex-wrap">
                 <span className="text-gray-600">Base Rate:</span>
                 <span>₹150 per kg</span>
               </div>
               
               {parseFloat(formData.weight) > 0 && (
-                <div className="flex justify-between">
+                <div className="flex justify-between flex-wrap">
                   <span className="text-gray-600">Weight ({formData.weight} kg):</span>
                   <span>₹{(parseFloat(formData.weight) * 150).toFixed(2)}</span>
                 </div>
               )}
               
               {(parseFloat(formData.length) > 0 && parseFloat(formData.width) > 0 && parseFloat(formData.height) > 0) && (
-                <div className="flex justify-between">
+                <div className="flex justify-between flex-wrap">
                   <span className="text-gray-600">Volumetric Weight:</span>
                   <span>
                     {(parseFloat(formData.length) * parseFloat(formData.width) * parseFloat(formData.height) / 5000).toFixed(2)} kg
@@ -219,7 +218,7 @@ function PriceCalculator() {
               )}
               
               {formData.packageType !== 'standard' && (
-                <div className="flex justify-between">
+                <div className="flex justify-between flex-wrap">
                   <span className="text-gray-600">Package Type ({formData.packageType}):</span>
                   <span>
                     {formData.packageType === 'fragile' ? '+20%' : 
@@ -229,7 +228,7 @@ function PriceCalculator() {
               )}
               
               {formData.serviceType !== 'standard' && (
-                <div className="flex justify-between">
+                <div className="flex justify-between flex-wrap">
                   <span className="text-gray-600">Service Type ({formData.serviceType}):</span>
                   <span>
                     {formData.serviceType === 'express' ? '+50%' : 
@@ -241,7 +240,7 @@ function PriceCalculator() {
             
             <Separator className="my-2" />
             
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-500 text-center md:text-left">
               Formula: Max(Weight, Volumetric Weight) × Rate × Package Type Factor × Service Type Factor
             </div>
           </div>

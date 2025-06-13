@@ -61,11 +61,11 @@ const paymentMethods = [
 
 function PaymentMethodSelector({ onSelect, selectedMethod = 'card', disabled = false }) {
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>Select Payment Method</CardTitle>
+		<Card className="mx-auto max-w-full sm:max-w-none">
+			<CardHeader className="px-3 sm:px-6">
+				<CardTitle className="text-lg sm:text-xl">Select Payment Method</CardTitle>
 			</CardHeader>
-			<CardContent>
+			<CardContent className="px-3 sm:px-6">
 				<RadioGroup
 					value={selectedMethod}
 					onValueChange={onSelect}
@@ -74,28 +74,28 @@ function PaymentMethodSelector({ onSelect, selectedMethod = 'card', disabled = f
 					{paymentMethods.map(method => (
 						<div
 							key={method.id}
-							className={`flex items-center space-x-3 border rounded-lg p-3 ${selectedMethod === method.id ? 'border-primary bg-primary/5' : 'border-input'}`}
+							className={`flex items-center space-x-2 sm:space-x-3 border rounded-lg p-2 sm:p-3 ${selectedMethod === method.id ? 'border-primary bg-primary/5' : 'border-input'}`}
 						>
 							<RadioGroupItem value={method.id} id={method.id} disabled={disabled} />
 							<Label htmlFor={method.id} className="flex-1 cursor-pointer">
-								<div className="flex justify-between items-center w-full">
+								<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full">
 									<div className="flex-shrink-0">
-										<div className="font-medium">{method.name}</div>
-										<div className="text-sm text-muted-foreground">{method.description}</div>
+										<div className="font-medium text-sm sm:text-base">{method.name}</div>
+										<div className="text-xs sm:text-sm text-muted-foreground">{method.description}</div>
 									</div>
 									{method.icons ? (
-										<div className="flex space-x-4 flex-shrink-0 ml-4">
+										<div className="flex space-x-2 sm:space-x-4 flex-shrink-0 sm:ml-4 mt-2 sm:mt-0">
 											{method.icons.map((icon, index) => (
 												<img
 													key={index}
 													src={icon.src}
 													alt={icon.alt}
-													className="h-6 w-auto"
+													className="h-4 sm:h-6 w-auto"
 												/>
 											))}
 										</div>
 									) : (
-										<div className="text-xl flex-shrink-0 ml-4">{method.icon}</div>
+										<div className="text-lg sm:text-xl flex-shrink-0 sm:ml-4 mt-2 sm:mt-0">{method.icon}</div>
 									)}
 								</div>
 							</Label>

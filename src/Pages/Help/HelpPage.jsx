@@ -13,6 +13,7 @@ function HelpPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
 
   const frequentlyAskedQuestions = [
     {
@@ -48,8 +49,6 @@ function HelpPage() {
       title: 'Creating Your First Shipment',
       snippet: 'Learn how to create and manage your first shipment from start to finish.',
       content: `
-# Creating Your First Shipment
-
 Follow these steps to create your first shipment:
 
 1. **Navigate to Shipments**: Click on the Shipments tab in the sidebar.
@@ -72,8 +71,6 @@ Your shipment will be processed and you can track its progress from the Shipment
       title: 'Understanding Tracking Statuses',
       snippet: 'A comprehensive guide to all the tracking statuses and what they mean.',
       content: `
-# Understanding Tracking Statuses
-
 Our shipment tracking system uses the following statuses:
 
 ## Order Placed
@@ -108,8 +105,6 @@ Each status update includes a timestamp and, where applicable, location informat
       title: 'Payment and Billing',
       snippet: 'Information about payment methods, invoices, and refund policies.',
       content: `
-# Payment and Billing
-
 ## Payment Methods
 We accept the following payment methods:
 - Credit Cards (Visa, MasterCard, American Express)
@@ -205,25 +200,31 @@ For any billing inquiries, please contact our support team.
     });
   }, [searchQuery]);
 
+  // Add responsive listener
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-6">
-        <div className="flex flex-col gap-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-3xl font-bold">Help Center</h2>
-          </div>
-          
+      <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-6 overflow-x-hidden">
+        <div className="flex flex-col gap-3 sm:gap-6 w-full">
           {/* Search Bar */}
-          <div className="relative w-full mb-4">
+          <div className="relative w-full mb-3 sm:mb-4">
             <div className="absolute inset-y-0 start-0 flex items-center pl-3 pointer-events-none">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-400">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-400">
                 <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
             <input
               type="search"
-              className="block w-full p-4 pl-12 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full p-3 sm:p-4 pl-10 sm:pl-12 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
               placeholder="Search for help topics, guides, or FAQs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -244,8 +245,8 @@ For any billing inquiries, please contact our support team.
               <HelpArticle article={selectedArticle} />
             </div>
           ) : searchResults ? (
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-4 sm:gap-6">
+              <div className="flex flex-wrap items-center gap-2">
                 <button 
                   onClick={() => setSearchQuery("")}
                   className="text-blue-600 hover:text-blue-800 flex items-center gap-2 w-fit"
@@ -255,7 +256,7 @@ For any billing inquiries, please contact our support team.
                   </svg>
                   Back to all topics
                 </button>
-                <span className="text-gray-500">
+                <span className="text-gray-500 text-sm sm:text-base">
                   Search results for: <span className="font-medium">"{searchQuery}"</span>
                 </span>
               </div>
@@ -263,15 +264,15 @@ For any billing inquiries, please contact our support team.
               {/* FAQs search results */}
               {searchResults.faqs.length > 0 && (
                 <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle>Matching FAQs ({searchResults.faqs.length})</CardTitle>
+                  <CardHeader className="pb-2 sm:pb-3">
+                    <CardTitle className="text-base sm:text-lg">Matching FAQs ({searchResults.faqs.length})</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Accordion type="single" collapsible className="w-full">
                       {searchResults.faqs.map((faq) => (
                         <AccordionItem key={faq.id} value={faq.id}>
-                          <AccordionTrigger>{faq.question}</AccordionTrigger>
-                          <AccordionContent>{faq.answer}</AccordionContent>
+                          <AccordionTrigger className="text-sm sm:text-base">{faq.question}</AccordionTrigger>
+                          <AccordionContent className="text-sm sm:text-base">{faq.answer}</AccordionContent>
                         </AccordionItem>
                       ))}
                     </Accordion>
@@ -282,19 +283,19 @@ For any billing inquiries, please contact our support team.
               {/* Guides search results */}
               {searchResults.guides.length > 0 && (
                 <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle>Matching Guides ({searchResults.guides.length})</CardTitle>
+                  <CardHeader className="pb-2 sm:pb-3">
+                    <CardTitle className="text-base sm:text-lg">Matching Guides ({searchResults.guides.length})</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {searchResults.guides.map((guide) => (
                         <div 
                           key={guide.id} 
-                          className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50"
+                          className="border rounded-lg p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                           onClick={() => setSelectedArticle(guide)}
                         >
-                          <h3 className="font-medium mb-2">{guide.title}</h3>
-                          <p className="text-gray-600 text-sm">{guide.snippet}</p>
+                          <h3 className="font-medium mb-1 sm:mb-2 text-sm sm:text-base">{guide.title}</h3>
+                          <p className="text-gray-600 text-xs sm:text-sm">{guide.snippet}</p>
                         </div>
                       ))}
                     </div>
@@ -305,21 +306,21 @@ For any billing inquiries, please contact our support team.
               {/* Videos search results */}
               {searchResults.videos.length > 0 && (
                 <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle>Matching Videos ({searchResults.videos.length})</CardTitle>
+                  <CardHeader className="pb-2 sm:pb-3">
+                    <CardTitle className="text-base sm:text-lg">Matching Videos ({searchResults.videos.length})</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {searchResults.videos.map((video) => (
-                        <div key={video.id} className="border rounded-lg p-4">
-                          <div className="bg-gray-200 h-32 flex items-center justify-center mb-3 rounded">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <div key={video.id} className="border rounded-lg p-3 sm:p-4">
+                          <div className="bg-gray-200 h-24 sm:h-32 flex items-center justify-center mb-2 sm:mb-3 rounded">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-10 sm:h-10">
                               <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="white" stroke="#555" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                               <path d="M15.5 12L10.5 15V9L15.5 12Z" fill="#555" stroke="#555" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
                           </div>
-                          <h3 className="font-medium mb-2">{video.title}</h3>
-                          <p className="text-gray-600 text-sm">{video.description}</p>
+                          <h3 className="font-medium mb-1 sm:mb-2 text-sm sm:text-base">{video.title}</h3>
+                          <p className="text-gray-600 text-xs sm:text-sm">{video.description}</p>
                         </div>
                       ))}
                     </div>
@@ -330,17 +331,17 @@ For any billing inquiries, please contact our support team.
               {/* No results found */}
               {searchResults.faqs.length === 0 && searchResults.guides.length === 0 && searchResults.videos.length === 0 && (
                 <Card>
-                  <CardContent className="p-6 flex flex-col items-center text-center">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-400 mb-4">
+                  <CardContent className="p-4 sm:p-6 flex flex-col items-center text-center">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-400 mb-3 sm:mb-4 sm:w-16 sm:h-16">
                       <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       <path d="M8 11H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    <h3 className="text-lg font-semibold mb-2">No results found</h3>
-                    <p className="text-gray-600 mb-4">We couldn't find any content matching your search. Try different keywords or browse the categories below.</p>
+                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">No results found</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">We couldn't find any content matching your search. Try different keywords or browse the categories below.</p>
                     <button 
                       onClick={() => setSearchQuery("")}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-md text-sm font-medium"
                     >
                       View all help topics
                     </button>
@@ -352,23 +353,41 @@ For any billing inquiries, please contact our support team.
             <Tabs defaultValue="faq" className="w-full">
               <HelpCategories onCategoryClick={(categoryId) => setSelectedCategory(categoryId)} />
               
-              <TabsList className="grid w-full grid-cols-3 mb-8 mt-6">
-                <TabsTrigger value="faq">Frequently Asked Questions</TabsTrigger>
-                <TabsTrigger value="guides">Shipment Guides</TabsTrigger>
-                <TabsTrigger value="videos">Video Tutorials</TabsTrigger>
-              </TabsList>
+              {/* Responsive tabs layout with scroll on mobile */}
+              <div className="relative mt-4 sm:mt-6 mb-4 sm:mb-8 w-full overflow-hidden">
+                <TabsList className={`${isMobileView ? "flex w-full overflow-x-auto snap-x pb-2 max-w-full" : "grid w-full grid-cols-3"}`}>
+                  <TabsTrigger 
+                    value="faq" 
+                    className={`${isMobileView ? "flex-shrink-0 snap-center text-xs" : ""}`}
+                  >
+                    {isMobileView ? "FAQs" : "Frequently Asked Questions"}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="guides" 
+                    className={`${isMobileView ? "flex-shrink-0 snap-center text-xs" : ""}`}
+                  >
+                    Shipment Guides
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="videos" 
+                    className={`${isMobileView ? "flex-shrink-0 snap-center text-xs" : ""}`}
+                  >
+                    Video Tutorials
+                  </TabsTrigger>
+                </TabsList>
+              </div>
               
               <TabsContent value="faq">
                 <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle>Frequently Asked Questions</CardTitle>
+                  <CardHeader>
+                    <CardTitle className="text-base sm:text-lg">Frequently Asked Questions</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className='-mt-4'>
                     <Accordion type="single" collapsible className="w-full">
                       {frequentlyAskedQuestions.map((faq) => (
                         <AccordionItem key={faq.id} value={faq.id}>
-                          <AccordionTrigger>{faq.question}</AccordionTrigger>
-                          <AccordionContent>{faq.answer}</AccordionContent>
+                          <AccordionTrigger className="text-sm sm:text-base">{faq.question}</AccordionTrigger>
+                          <AccordionContent className="text-sm sm:text-base">{faq.answer}</AccordionContent>
                         </AccordionItem>
                       ))}
                     </Accordion>
@@ -377,14 +396,14 @@ For any billing inquiries, please contact our support team.
               </TabsContent>
 
               <TabsContent value="guides">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {shipmentGuides.map((guide) => (
                     <Card key={guide.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedArticle(guide)}>
                       <CardHeader>
-                        <CardTitle>{guide.title}</CardTitle>
+                        <CardTitle className="text-base sm:text-lg">{guide.title}</CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600">{guide.snippet}</p>
+                      <CardContent className='-mt-4'>
+                        <p className="text-gray-600 text-xs sm:text-sm">{guide.snippet}</p>
                       </CardContent>
                     </Card>
                   ))}
@@ -392,20 +411,20 @@ For any billing inquiries, please contact our support team.
               </TabsContent>
 
               <TabsContent value="videos">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {videoTutorials.map((video) => (
                     <Card key={video.id}>
-                      <div className="bg-gray-200 h-40 flex items-center justify-center">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <div className="bg-gray-200 h-32 sm:h-40 flex items-center justify-center">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-12 sm:h-12">
                           <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="white" stroke="#555" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                           <path d="M15.5 12L10.5 15V9L15.5 12Z" fill="#555" stroke="#555" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </div>
-                      <CardHeader>
-                        <CardTitle>{video.title}</CardTitle>
+                      <CardHeader className="pb-2 sm:pb-3">
+                        <CardTitle className="text-base sm:text-lg">{video.title}</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-gray-600">{video.description}</p>
+                        <p className="text-gray-600 text-xs sm:text-sm">{video.description}</p>
                       </CardContent>
                     </Card>
                   ))}
@@ -416,15 +435,15 @@ For any billing inquiries, please contact our support team.
 
           <Card>
             <CardHeader>
-              <CardTitle>Can't find what you're looking for?</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Can't find what you're looking for?</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <p className="text-gray-700">
+            <CardContent className='-mt-4'>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                <p className="text-gray-700 text-sm sm:text-base text-center sm:text-left mb-3 sm:mb-0">
                   Our support team is available 24/7 to answer your questions.
                 </p>
-                <Link to="/support" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium flex items-center gap-2">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <Link to="/support" className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-md text-sm font-medium flex items-center gap-2 whitespace-nowrap">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-5 sm:h-5">
                     <path d="M17.5 17.5L22 22" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M20 11C20 15.9706 15.9706 20 11 20C6.02944 20 2 15.9706 2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M11 8V14" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
