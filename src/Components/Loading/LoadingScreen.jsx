@@ -35,7 +35,7 @@ const LoadingScreen = ({ show = true, minDisplayTime = 2000, onComplete }) => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-150 flex items-center justify-center bg-background/80 backdrop-blur-sm">
       <div className="flex flex-col items-center">
         <div className="w-auto h-auto">
           <Lottie

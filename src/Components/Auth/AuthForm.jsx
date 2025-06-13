@@ -206,24 +206,24 @@ function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center w-full h-full relative"
+    <div className="min-h-screen flex items-center justify-center w-full h-full relative px-4 py-6 sm:py-10 md:py-16"
       style={{
         backgroundImage: `url(${BGImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}>
       {/* Logo positioned at absolute top left corner of window */}
-      <div className="fixed top-4 left-4 z-10">
-        <img src={Logo} alt="FreightFox Logo" className="h-8 sm:h-10 w-auto" />
+      <div className="fixed top-3 sm:top-4 left-3 sm:left-4 z-10">
+        <img src={Logo} alt="FreightFox Logo" className="h-8 sm:h-8 md:h-10 w-auto" />
       </div>
 
-      <div className="w-full max-w-md px-4 relative">
-        <Card className="backdrop-blur-xl bg-white/20 border border-white/30 shadow-xl">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-center text-xl font-semibold text-black">
+      <div className="w-full max-w-[90%] xs:max-w-[360px] sm:max-w-md relative mx-auto">
+        <Card className="backdrop-blur-xl bg-white/20 border border-white/30 shadow-xl w-full">
+          <CardHeader className="pb-2 sm:pb-4">
+            <CardTitle className="text-center text-lg sm:text-xl font-semibold text-black">
               {isResetPassword ? 'Reset Password' : isLogin ? 'Sign in with email' : 'Register'}
             </CardTitle>
-            <CardDescription className="text-center text-gray-700 px-6">
+            <CardDescription className="text-center text-gray-700 px-2 sm:px-6 text-sm sm:text-base">
               {isResetPassword
                 ? 'Enter your email to reset your password'
                 : isLogin
@@ -232,8 +232,8 @@ function AuthForm() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <CardContent className="py-2 sm:py-4">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4" noValidate>
               {!isLogin && !isResetPassword && (
                 <>
                   <div className="space-y-2">
@@ -243,38 +243,8 @@ function AuthForm() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Full Name"
-                      className="bg-white/70 border border-gray-200"
+                      className="bg-white/70 border border-gray-200 h-9 sm:h-10 text-sm sm:text-base px-2 sm:px-3"
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">
-                      Profile Picture (optional)
-                    </Label>
-                    <div className="flex items-center space-x-4">
-                      <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                        {profilePicture ? (
-                          <img
-                            src={profilePicture}
-                            alt="Profile Preview"
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <Input
-                          id="profilePicture"
-                          type="file"
-                          onChange={handleProfilePictureChange}
-                          accept="image/*"
-                          className="text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700"
-                        />
-                      </div>
-                    </div>
                   </div>
                 </>
               )}
@@ -286,7 +256,7 @@ function AuthForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
-                  className="bg-white/70 border border-gray-200"
+                  className="bg-white/70 border border-gray-200 h-9 sm:h-10 text-sm sm:text-base px-2 sm:px-3"
                 />
               </div>
 
@@ -298,7 +268,7 @@ function AuthForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password"
-                    className="bg-white/70 border border-gray-200"
+                    className="bg-white/70 border border-gray-200 h-9 sm:h-10 text-sm sm:text-base px-2 sm:px-3"
                   />
                 </div>
               )}
@@ -311,20 +281,20 @@ function AuthForm() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm Password"
-                    className="bg-white/70 border border-gray-200"
+                    className="bg-white/70 border border-gray-200 h-9 sm:h-10 text-sm sm:text-base px-2 sm:px-3"
                   />
                 </div>
               )}
 
               {isLogin && !isResetPassword && (
-                <div className="flex justify-end -mt-3">
+                <div className="flex justify-end -mt-2 sm:-mt-3">
                   <Button
                     variant="link"
                     onClick={(e) => {
                       e.preventDefault();
                       setIsResetPassword(true);
                     }}
-                    className="p-0 text-xs text-gray-700 cursor-pointer"
+                    className="p-0 text-[10px] sm:text-xs text-gray-700 cursor-pointer h-auto"
                   >
                     Forgot password?
                   </Button>
@@ -333,26 +303,26 @@ function AuthForm() {
 
               <Button
                 type="submit"
-                className="w-full bg-gray-900 hover:bg-black text-white cursor-pointer"
+                className="w-full bg-gray-900 hover:bg-black text-white cursor-pointer text-sm sm:text-base py-1.5 sm:py-2"
               >
                 {isResetPassword ? 'Send Reset Link' : isLogin ? 'Get Started' : 'Register'}
               </Button>
 
               {!isResetPassword && (
                 <>
-                  <div className="relative flex items-center justify-center mt-2">
+                  <div className="relative flex items-center justify-center mt-2 mb-1">
                     <div className="border-t border-gray-400 flex-grow"></div>
-                    <span className="mx-4 text-sm text-gray-600">Or sign in with</span>
+                    <span className="mx-2 sm:mx-4 text-xs sm:text-sm text-gray-600">Or sign in with</span>
                     <div className="border-t border-gray-400 flex-grow"></div>
                   </div>
 
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full mt-4 flex justify-center items-center gap-2 border border-gray-300 bg-white/80 py-2 cursor-pointer"
+                    className="w-full mt-2 sm:mt-4 flex justify-center items-center gap-1 sm:gap-2 border border-gray-300 bg-white/80 py-1.5 sm:py-2 cursor-pointer text-xs sm:text-sm"
                     onClick={handleGoogleSignIn}
                   >
-                    <svg width="20" height="20" viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
+                    <svg width="16" height="16" className="sm:w-[20px] sm:h-[20px]" viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
                       <path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4" />
                       <path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853" />
                       <path d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782" fill="#FBBC05" />
@@ -365,13 +335,13 @@ function AuthForm() {
             </form>
           </CardContent>
 
-          <CardFooter className="flex flex-col text-center -mt-2">
+          <CardFooter className="flex flex-col text-center -mt-6">
             {!isResetPassword && (
               <div className="w-full">
                 <div className="text-center">
                   <span
                     onClick={() => setIsLogin(!isLogin)}
-                    className="text-sm text-gray-700 cursor-pointer hover:underline"
+                    className="text-xs sm:text-sm text-gray-700 cursor-pointer hover:underline"
                   >
                     {isLogin ? 'Need an account? Register' : 'Have an account? Login'}
                   </span>
@@ -383,7 +353,7 @@ function AuthForm() {
                 <div className="text-center">
                   <span
                     onClick={() => setIsResetPassword(false)}
-                    className="text-sm text-gray-700 cursor-pointer hover:underline"
+                    className="text-xs sm:text-sm text-gray-700 cursor-pointer hover:underline"
                   >
                     Back to login
                   </span>
@@ -394,7 +364,7 @@ function AuthForm() {
         </Card>
       </div>
       <Toaster
-        position="bottom-right"
+        position="bottom-center"
         closeButton
         richColors
         theme="light"
@@ -405,6 +375,8 @@ function AuthForm() {
             background: '#FFFFFF',
             color: '#374151',
             border: '2px solid #e5e7eb',
+            fontSize: '0.875rem',
+            maxWidth: '90vw',
           },
           success: {
             style: {

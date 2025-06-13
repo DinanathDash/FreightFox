@@ -9,17 +9,17 @@ function SimpleTracker({ orders, activeTrackingId: activeOrderId, setActiveTrack
     const orderId = order.orderId ? order.orderId.toString() : null;
     const id = order.id ? order.id.toString() : null;
     const activeId = activeOrderId ? activeOrderId.toString() : null;
-    
+
     return orderId === activeId || id === activeId;
   }) || orders[0];
-  
+
   // Calculate the progress percentage based on order status
   const calculateProgress = (status) => {
     // Normalize status to lowercase for case-insensitive comparison
     const normalizedStatus = status?.toLowerCase() || '';
-    
-    switch(normalizedStatus) {
-      case 'pending': 
+
+    switch (normalizedStatus) {
+      case 'pending':
         return 0;
       case 'processing':
         return 10;
@@ -66,7 +66,7 @@ function SimpleTracker({ orders, activeTrackingId: activeOrderId, setActiveTrack
   // Use the distance directly from the order's distance field in Firebase
   const distance = activeOrder?.distance || 0;
   const progress = calculateProgress(activeOrder.status);
-  
+
   return (
     <Card className="col-span-full lg:col-span-2">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -77,13 +77,13 @@ function SimpleTracker({ orders, activeTrackingId: activeOrderId, setActiveTrack
           {/* Order Info */}
           <div className="mb-4">
             <p className="text-sm font-medium text-gray-500">Order ID: <span className="font-bold text-gray-700">{activeOrder.orderId || activeOrder.id}</span></p>
-            
+
             {/* Status Line - Now full width above from/to */}
             <div className="mt-4 mb-4 w-full">
               <div className="w-full h-1 bg-gray-200 relative">
                 <div className="h-1 bg-blue-500" style={{ width: `${progress}%` }}></div>
-                <div 
-                  className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-500" 
+                <div
+                  className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-500"
                   style={{ left: `${progress}%`, marginLeft: '-8px' }}
                 ></div>
               </div>
@@ -92,39 +92,38 @@ function SimpleTracker({ orders, activeTrackingId: activeOrderId, setActiveTrack
                 <span className="text-xs text-gray-500">Delivered</span>
               </div>
             </div>
-            
+
             {/* From/To information - now below the status line */}
             <div className="flex justify-between items-center mt-4">
               <div>
                 <p className="text-sm font-medium text-gray-500">From</p>
-                <p className="font-semibold">{origin}, {activeOrder?.from?.state || activeOrder?.shipping?.source?.state || ''}</p>
+                <p className="font-semibold text-sm sm:text-[16px]">{origin}, {activeOrder?.from?.state || activeOrder?.shipping?.source?.state || ''}</p>
               </div>
-              <div>
+              <div className='text-right md:text-left'>
                 <p className="text-sm font-medium text-gray-500">To</p>
-                <p className="font-semibold">{destination}, {activeOrder?.to?.state || activeOrder?.shipping?.destination?.state || ''}</p>
+                <p className="font-semibold text-sm sm:text-[16px]">{destination}, {activeOrder?.to?.state || activeOrder?.shipping?.destination?.state || ''}</p>
               </div>
             </div>
           </div>
-          
+
           {/* Status Information */}
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm font-medium text-gray-500">Status</p>
-                <span className={`px-3 py-1 mt-1 inline-block rounded-full text-xs font-medium ${
-                  activeOrder.status?.toLowerCase() === 'delivered' ? 'bg-green-100 text-green-800' :
-                  activeOrder.status?.toLowerCase() === 'pending' ? 'bg-amber-100 text-amber-800' :
-                  activeOrder.status?.toLowerCase() === 'cancelled' ? 'bg-red-100 text-red-800' :
-                  activeOrder.status?.toLowerCase() === 'processing' ? 'bg-purple-100 text-purple-800' :
-                  activeOrder.status?.toLowerCase() === 'in transit' ? 'bg-blue-100 text-blue-800' :
-                  activeOrder.status?.toLowerCase() === 'out for delivery' ? 'bg-amber-100 text-amber-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
+                <span className={`px-3 py-1 mt-1 inline-block rounded-full text-xs font-medium ${activeOrder.status?.toLowerCase() === 'delivered' ? 'bg-green-100 text-green-800' :
+                    activeOrder.status?.toLowerCase() === 'pending' ? 'bg-amber-100 text-amber-800' :
+                      activeOrder.status?.toLowerCase() === 'cancelled' ? 'bg-red-100 text-red-800' :
+                        activeOrder.status?.toLowerCase() === 'processing' ? 'bg-purple-100 text-purple-800' :
+                          activeOrder.status?.toLowerCase() === 'in transit' ? 'bg-blue-100 text-blue-800' :
+                            activeOrder.status?.toLowerCase() === 'out for delivery' ? 'bg-amber-100 text-amber-800' :
+                              'bg-gray-100 text-gray-800'
+                  }`}>
                   {/* Ensure first letter is capitalized */}
                   {activeOrder.status?.charAt(0).toUpperCase() + activeOrder.status?.slice(1) || 'N/A'}
                 </span>
               </div>
-              <div>
+              <div className='text-right md:text-left'>
                 <p className="text-sm font-medium text-gray-500">Distance</p>
                 <p className="font-semibold">{activeOrder?.distance || 0} km</p>
               </div>
@@ -134,7 +133,7 @@ function SimpleTracker({ orders, activeTrackingId: activeOrderId, setActiveTrack
                     <p className="text-sm font-medium text-gray-500">Package Type</p>
                     <p className="font-semibold">{activeOrder.packageDetails.category || 'Standard'}</p>
                   </div>
-                  <div>
+                  <div className='text-right md:text-left'>
                     <p className="text-sm font-medium text-gray-500">Weight</p>
                     <p className="font-semibold">{activeOrder.packageDetails.weight || '0'} kg</p>
                   </div>
@@ -145,8 +144,8 @@ function SimpleTracker({ orders, activeTrackingId: activeOrderId, setActiveTrack
 
           {/* Order Selection */}
           <div className="absolute bottom-0 right-0">
-            <Select 
-              value={activeOrderId} 
+            <Select
+              value={activeOrderId}
               onValueChange={handleOrderChange}
             >
               <SelectTrigger className="w-[130px] h-8 bg-white border border-gray-100">

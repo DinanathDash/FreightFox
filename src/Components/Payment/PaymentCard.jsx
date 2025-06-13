@@ -1,6 +1,10 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Button } from "../ui/button";
+import visaSvg from '../../assets/visa.svg';
+import mastercardSvg from '../../assets/mastercard.svg';
+import amexSvg from '../../assets/amex.svg';
+import rupaySvg from '../../assets/rupay.svg';
 
 function PaymentCard({ payment }) {
   // Format date
@@ -75,10 +79,10 @@ function PaymentCard({ payment }) {
     
     if (method === 'card') {
       switch(cardType) {
-        case 'visa': return '💳';
-        case 'mastercard': return '💳';
-        case 'amex': return '💳';
-        case 'rupay': return '💳';
+        case 'visa': return <img src={visaSvg} alt="Visa" className="h-6 w-auto" />;
+        case 'mastercard': return <img src={mastercardSvg} alt="Mastercard" className="h-6 w-auto" />;
+        case 'amex': return <img src={amexSvg} alt="American Express" className="h-6 w-auto" />;
+        case 'rupay': return <img src={rupaySvg} alt="RuPay" className="h-6 w-auto" />;
         default: return '💳';
       }
     } else if (method === 'upi') {

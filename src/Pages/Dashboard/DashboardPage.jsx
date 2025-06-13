@@ -244,42 +244,46 @@ function DashboardPage() {
   return (
     <DashboardLayout>
       {/* Header with Welcome message and filter controls */}
-      <div className="flex flex-col space-y-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div className="flex items-start space-x-1">
-            {filterOptions.map((option) => (
-              <button
-                key={option}
-                onClick={() => setActiveFilter(option)}
-                className={`px-3 py-1.5 text-sm ${activeFilter === option
-                  ? "bg-blue-50 text-blue-800 border-blue-100"
-                  : "bg-white text-gray-700 border-gray-100"
-                  } border rounded-md`}
-              >
-                {option}
-              </button>
-            ))}
+      <div className="flex flex-col space-y-3 px-2 sm:px-4 md:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          {/* Filter selection grid for better mobile layout */}
+          <div className="w-full md:w-auto pb-2 md:pb-0">
+            <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3">
+              {filterOptions.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => setActiveFilter(option)}
+                  className={`px-3 py-1.5 text-sm text-center whitespace-nowrap ${activeFilter === option
+                    ? "bg-blue-50 text-blue-800 border-blue-100"
+                    : "bg-white text-gray-700 border-gray-100"
+                    } border rounded-md`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className='flex items-end space-x-2'>
+          <div className='flex items-center space-x-2 w-full md:w-auto justify-between sm:justify-end'>
             <Button
               variant="outline"
-              className="flex items-center gap-2"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-xs sm:text-sm sm:gap-2"
               onClick={() => setDateRangeDialogOpen(true)}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
                 <path d="M8 2V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <path d="M16 2V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <path d="M3 10H21" stroke="currentColor" strokeWidth="2" />
               </svg>
-              Select Dates
+              <span className="hidden sm:inline">Select Dates</span>
+              <span className="sm:hidden">Dates</span>
             </Button>
             <Button
               variant="outline"
-              className="flex items-center gap-2"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-xs sm:text-sm sm:gap-2"
               onClick={() => setFiltersDialogOpen(true)}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3 7H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <path d="M10 17H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -289,9 +293,9 @@ function DashboardPage() {
           </div>
         </div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           {/* Stats Cards with Charts */}
-          <div className="grid grid-cols-1 gap-6 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4 mt-2">
             {/* Total Shipments */}
             <StatsCard
               title="Total Shipments"
@@ -318,16 +322,16 @@ function DashboardPage() {
               color="green"
               icon={
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2.5 13.24V11.51C2.5 9.44001 4.18999 7.75 6.25999 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H12.26" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M2.5 12.41V7.84004C2.5 6.65004 3.23 5.59 4.34 5.17L12.28 2.17C13.52 1.7 14.85 2.62003 14.85 3.95003V7.75002" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M22.5588 13.9702V16.0302C22.5588 16.5802 22.1188 17.0302 21.5588 17.0502H19.5988C18.5188 17.0502 17.5288 16.2602 17.4388 15.1802C17.3788 14.5502 17.6188 13.9602 18.0388 13.5502C18.4088 13.1702 18.9188 12.9502 19.4788 12.9502H21.5588C22.1188 12.9702 22.5588 13.4202 22.5588 13.9702Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M7 12H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2.5 13.24V11.51C2.5 9.44001 4.18999 7.75 6.25999 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H12.26" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2.5 12.41V7.84004C2.5 6.65004 3.23 5.59 4.34 5.17L12.28 2.17C13.52 1.7 14.85 2.62003 14.85 3.95003V7.75002" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M22.5588 13.9702V16.0302C22.5588 16.5802 22.1188 17.0302 21.5588 17.0502H19.5988C18.5188 17.0502 17.5288 16.2602 17.4388 15.1802C17.3788 14.5502 17.6188 13.9602 18.0388 13.5502C18.4088 13.1702 18.9188 12.9502 19.4788 12.9502H21.5588C22.1188 12.9702 22.5588 13.4202 22.5588 13.9702Z" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M7 12H14" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               }
             />
           </div>
           {/* Tracking Progress */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 gap-4 mt-2">
             {/* Use our SimpleTracker component with tracking data */}
             <SimpleTracker
               orders={filteredShipments}
@@ -338,17 +342,17 @@ function DashboardPage() {
         </div>
 
         {/* Shipping List Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-          {/* Shipping List (full width on mobile, 1/3 width on larger screens) */}
-          <div className="col-span-full lg:col-span-3">
+        <div className="grid grid-cols-1 gap-4 mt-2">
+          {/* Shipping List (full width) */}
+          <div className="col-span-full">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2">
                 <CardTitle>Shipping List</CardTitle>
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 w-full sm:w-auto justify-end">
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex items-center gap-1 text-xs h-8 ${shippingListFilter === '7d' ? 'bg-blue-50 text-blue-800 border-blue-200' : ''}`}
+                    className={`flex items-center gap-1 text-xs h-9 ${shippingListFilter === '7d' ? 'bg-blue-50 text-blue-800 border-blue-200' : ''}`}
                     onClick={handleLast7dClick}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -367,7 +371,7 @@ function DashboardPage() {
                           <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                           <path d="M10 17H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                         </svg>
-                        <span>Sort by: {sortOrder === 'latest' ? 'Latest' : sortOrder === 'oldest' ? 'Oldest' : 'Status'}</span>
+                        <span className="truncate max-w-[100px]">Sort: {sortOrder === 'latest' ? 'Latest' : sortOrder === 'oldest' ? 'Oldest' : 'Status'}</span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
@@ -379,59 +383,95 @@ function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-gray-50">
-                    <TableRow>
-                      <TableHead className="w-[150px] uppercase text-xs font-medium text-gray-500">ORDER ID</TableHead>
-                      <TableHead className="uppercase text-xs font-medium text-gray-500">CATEGORY</TableHead>
-                      <TableHead className="uppercase text-xs font-medium text-gray-500">ARRIVAL TIME</TableHead>
-                      <TableHead className="uppercase text-xs font-medium text-gray-500">ROUTE</TableHead>
-                      <TableHead className="uppercase text-xs font-medium text-gray-500">STATUS</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-4">Loading...</TableCell>
-                      </TableRow>
-                    ) : filteredShipments.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-4">No orders found</TableCell>
-                      </TableRow>
-                    ) : (
-                      filteredShipments.map((shipment, index) => (
-                        <TableRow key={index} className="hover:bg-gray-50">
-                          <TableCell className="font-medium text-sm">{`#${shipment.orderId || shipment.id}`}</TableCell>
-                          <TableCell className="text-sm">
-                            {shipment.packageDetails?.category || shipment.category}
-                            {shipment.packageDetails &&
-                              <div className="text-xs text-gray-500">
-                                {shipment.packageDetails.size} • {shipment.packageDetails.weight} kg
-                              </div>
-                            }
-                          </TableCell>
-                          <TableCell className="text-sm">
-                            {shipment.shipping?.estimatedArrivalDate ?
-                              shipment.shipping.arrivalDateString :
-                              shipment.arrival}
-                            {shipment.shipping &&
-                              <div className="text-xs text-gray-500">
-                                {shipment.shipping.estimatedDeliveryDays} days
-                              </div>
-                            }
-                          </TableCell>
-                          <TableCell className="text-sm">
-                            {shipment.route ||
-                              (shipment.shipping &&
-                                `${shipment.shipping.source.city} → ${shipment.shipping.destination.city}`)}
-                            {shipment.shipping &&
-                              <div className="text-xs text-gray-500">
-                                {shipment.shipping.distance} km
-                              </div>
-                            }
-                          </TableCell>
-                          <TableCell>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                {/* Table view for tablet and desktop */}
+                <div className="hidden sm:block">
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader className="bg-gray-50">
+                        <TableRow>
+                          <TableHead className="uppercase text-xs font-medium text-gray-500">ORDER ID</TableHead>
+                          <TableHead className="uppercase text-xs font-medium text-gray-500">CATEGORY</TableHead>
+                          <TableHead className="uppercase text-xs font-medium text-gray-500">ARRIVAL TIME</TableHead>
+                          <TableHead className="uppercase text-xs font-medium text-gray-500">ROUTE</TableHead>
+                          <TableHead className="uppercase text-xs font-medium text-gray-500">STATUS</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {loading ? (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-4">Loading...</TableCell>
+                          </TableRow>
+                        ) : filteredShipments.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-4">No orders found</TableCell>
+                          </TableRow>
+                        ) : (
+                          filteredShipments.map((shipment, index) => (
+                            <TableRow key={index} className="hover:bg-gray-50">
+                              <TableCell className="font-medium text-sm whitespace-nowrap">{`#${shipment.orderId || shipment.id}`}</TableCell>
+                              <TableCell className="text-sm">
+                                <div className="line-clamp-1">{shipment.packageDetails?.category || shipment.category}</div>
+                                {shipment.packageDetails &&
+                                  <div className="text-xs text-gray-500">
+                                    {shipment.packageDetails.size} • {shipment.packageDetails.weight} kg
+                                  </div>
+                                }
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                <div className="line-clamp-1">
+                                  {shipment.shipping?.estimatedArrivalDate ?
+                                    shipment.shipping.arrivalDateString :
+                                    shipment.arrival}
+                                </div>
+                                {shipment.shipping &&
+                                  <div className="text-xs text-gray-500">
+                                    {shipment.shipping.estimatedDeliveryDays} days
+                                  </div>
+                                }
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                <div className="line-clamp-1">
+                                  {shipment.route ||
+                                    (shipment.shipping &&
+                                      `${shipment.shipping.source.city} → ${shipment.shipping.destination.city}`)}
+                                </div>
+                                {shipment.shipping &&
+                                  <div className="text-xs text-gray-500">
+                                    {shipment.shipping.distance} km
+                                  </div>
+                                }
+                              </TableCell>
+                              <TableCell>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                    shipment.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
+                                      shipment.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
+                                        shipment.status === 'Processing' ? 'bg-purple-100 text-purple-800' :
+                                          'bg-blue-100 text-blue-800'
+                                  }`}>
+                                  {shipment.status}
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+
+                {/* Card view for mobile */}
+                <div className="block sm:hidden">
+                  {loading ? (
+                    <div className="text-center py-4">Loading...</div>
+                  ) : filteredShipments.length === 0 ? (
+                    <div className="text-center py-4">No orders found</div>
+                  ) : (
+                    <div className="divide-y divide-gray-100">
+                      {filteredShipments.map((shipment, index) => (
+                        <div key={index} className="p-4 hover:bg-gray-50">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="font-medium text-base">{`#${shipment.orderId || shipment.id}`}</div>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' :
                                 shipment.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
                                   shipment.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
                                     shipment.status === 'Processing' ? 'bg-purple-100 text-purple-800' :
@@ -439,12 +479,49 @@ function DashboardPage() {
                               }`}>
                               {shipment.status}
                             </span>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
+                          </div>
+                          <div className="grid grid-cols-2 gap-y-2 gap-x-2 text-sm">
+                            <div>
+                              <div className="text-gray-500 text-xs uppercase font-medium">Category</div>
+                              <div className="font-medium">{shipment.packageDetails?.category || shipment.category}</div>
+                              {shipment.packageDetails && (
+                                <div className="text-xs text-gray-500">
+                                  {shipment.packageDetails.size} • {shipment.packageDetails.weight} kg
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <div className="text-gray-500 text-xs uppercase font-medium">Arrival</div>
+                              <div className="font-medium">
+                                {shipment.shipping?.estimatedArrivalDate ?
+                                  shipment.shipping.arrivalDateString :
+                                  shipment.arrival}
+                              </div>
+                              {shipment.shipping && (
+                                <div className="text-xs text-gray-500">
+                                  {shipment.shipping.estimatedDeliveryDays} days
+                                </div>
+                              )}
+                            </div>
+                            <div className="col-span-2 mt-1">
+                              <div className="text-gray-500 text-xs uppercase font-medium">Route</div>
+                              <div className="font-medium">
+                                {shipment.route ||
+                                  (shipment.shipping &&
+                                    `${shipment.shipping.source.city} → ${shipment.shipping.destination.city}`)}
+                              </div>
+                              {shipment.shipping && (
+                                <div className="text-xs text-gray-500">
+                                  {shipment.shipping.distance} km
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

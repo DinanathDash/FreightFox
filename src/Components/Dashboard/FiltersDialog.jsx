@@ -104,7 +104,7 @@ const FiltersDialog = ({ open, onOpenChange, onFiltersChange, currentFilters = {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-w-[95%] w-full p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Filter Shipments</DialogTitle>
         </DialogHeader>
@@ -151,11 +151,11 @@ const FiltersDialog = ({ open, onOpenChange, onFiltersChange, currentFilters = {
             </div>
           </div>
         </div>
-        <DialogFooter className="flex justify-between">
-          <Button variant="outline" onClick={handleReset}>Reset</Button>
-          <div className="space-x-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button onClick={handleApply}>Apply</Button>
+        <DialogFooter className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between">
+          <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">Reset</Button>
+          <div className="flex flex-row space-x-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-grow sm:flex-grow-0">Cancel</Button>
+            <Button onClick={handleApply} className="flex-grow sm:flex-grow-0">Apply</Button>
           </div>
         </DialogFooter>
       </DialogContent>

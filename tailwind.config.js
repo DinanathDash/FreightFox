@@ -12,6 +12,9 @@ export default {
       borderRadius: {
         xl: '1rem',
         '2xl': '1.5rem'
+      },
+      screens: {
+        'xs': '480px', // Adding extra small breakpoint
       }
     }
   },
