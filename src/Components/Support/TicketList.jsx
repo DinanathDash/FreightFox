@@ -61,24 +61,24 @@ function TicketList({ tickets, isLoading, onSelectTicket, newTicketNumber = null
 
   if (isLoading) {
     return (
-      <div className="p-8 text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-t-blue-500 border-r-blue-500 border-b-transparent border-l-transparent mb-4"></div>
-        <p className="text-gray-600">Loading your tickets...</p>
+      <div className="p-4 sm:p-8 text-center">
+        <div className="inline-block animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-4 border-t-blue-500 border-r-blue-500 border-b-transparent border-l-transparent mb-4"></div>
+        <p className="text-sm sm:text-base text-gray-600">Loading your tickets...</p>
       </div>
     );
   }
 
   if (tickets.length === 0 && !newTicketNumber) {
     return (
-      <div className="p-6 text-center">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto text-gray-400 mb-3">
+      <div className="p-4 sm:p-6 text-center">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto text-gray-400 mb-3 sm:w-48 sm:h-48">
           <path d="M8 2V5" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M16 2V5" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M3.5 9.09H20.5" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <h3 className="text-lg font-medium mb-2">No tickets found</h3>
-        <p className="text-gray-500">
+        <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">No tickets found</h3>
+        <p className="text-sm sm:text-base text-gray-500">
           You haven't submitted any support tickets yet.
         </p>
       </div>
@@ -88,16 +88,16 @@ function TicketList({ tickets, isLoading, onSelectTicket, newTicketNumber = null
   return (
     <div className="divide-y">
       {newTicketNumber && (
-        <div className="p-4 border-b hover:bg-gray-50 cursor-pointer" onClick={() => onSelectTicket(newTicketNumber)}>
-          <div className="flex flex-col md:flex-row md:items-center justify-between">
+        <div className="p-3 sm:p-4 border-b hover:bg-gray-50 cursor-pointer" onClick={() => onSelectTicket(newTicketNumber)}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between">
             <div>
-              <span className="text-sm text-gray-500">#{newTicketNumber}</span>
-              <h4 className="font-medium">Recent submission</h4>
+              <span className="text-xs sm:text-sm text-gray-500">#{newTicketNumber}</span>
+              <h4 className="text-sm sm:text-base font-medium">Recent submission</h4>
               <span className={`inline-block px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 mt-1`}>
                 Pending
               </span>
             </div>
-            <div className="mt-2 md:mt-0 text-sm text-gray-500">
+            <div className="mt-2 sm:mt-0 text-xs sm:text-sm text-gray-500">
               Created just now
             </div>
           </div>
@@ -107,31 +107,31 @@ function TicketList({ tickets, isLoading, onSelectTicket, newTicketNumber = null
       {tickets.map((ticket) => (
         <div 
           key={ticket.id} 
-          className="p-4 hover:bg-gray-50 cursor-pointer"
+          className="p-3 sm:p-4 hover:bg-gray-50 cursor-pointer"
           onClick={() => onSelectTicket(ticket.id)}
         >
-          <div className="flex flex-col md:flex-row md:items-center justify-between">
-            <div>
-              <span className="text-sm text-gray-500">#{ticket.id}</span>
-              <h4 className="font-medium">{ticket.subject || 'Untitled Ticket'}</h4>
-              <div className="flex flex-wrap gap-2 mt-1">
-                <span className={`inline-block px-2 py-1 text-xs rounded-full ${getStatusBadgeClass(ticket.status)}`}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+            <div className="flex-grow">
+              <span className="text-xs sm:text-sm text-gray-500">#{ticket.id}</span>
+              <h4 className="text-sm sm:text-base font-medium truncate max-w-[250px] sm:max-w-md">{ticket.subject || 'Untitled Ticket'}</h4>
+              <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
+                <span className={`inline-block px-2 py-0.5 sm:py-1 text-xs rounded-full ${getStatusBadgeClass(ticket.status)}`}>
                   {ticket.status ? ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1) : 'Unknown'}
                 </span>
                 {ticket.priority && typeof ticket.priority === 'string' && (
-                  <span className="inline-block px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                  <span className="inline-block px-2 py-0.5 sm:py-1 text-xs rounded-full bg-gray-100 text-gray-800">
                     {ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)}
                   </span>
                 )}
                 {(!ticket.priority || typeof ticket.priority !== 'string') && (
-                  <span className="inline-block px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                  <span className="inline-block px-2 py-0.5 sm:py-1 text-xs rounded-full bg-gray-100 text-gray-800">
                     Normal
                   </span>
                 )}
               </div>
             </div>
-            <div className="mt-2 md:mt-0 text-right">
-              <div className="text-sm text-gray-700">{formatDate(ticket.createdAt)}</div>
+            <div className="mt-2 sm:mt-0 text-left sm:text-right flex flex-row sm:flex-col justify-between sm:justify-normal sm:min-w-[120px]">
+              <div className="text-xs sm:text-sm text-gray-700">{formatDate(ticket.createdAt)}</div>
               <div className="text-xs text-gray-500">
                 {ticket.lastUpdated ? `Updated ${formatTimeAgo(ticket.lastUpdated)}` : 'No updates yet'}
               </div>

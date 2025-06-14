@@ -116,20 +116,22 @@ function ProfileSettings() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-48">Loading...</div>;
+    return <div className="flex justify-center items-center h-40">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+    </div>;
   }
 
   return (
     <Card className="shadow-sm border border-gray-200 bg-white/80 backdrop-blur-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl text-primary">Profile Information</CardTitle>
+      <CardHeader className="pb-2 sm:pb-3">
+        <CardTitle className="text-lg sm:text-xl text-primary">Profile Information</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
-            <div className="flex flex-col items-center mb-6">
+            <div className="flex flex-col items-center mb-4 sm:mb-6">
               <label htmlFor="profilePicture" className="cursor-pointer relative group">
-                <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-blue-50 shadow-sm transition-all duration-300 hover:shadow-md">
+                <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-blue-50 shadow-sm transition-all duration-300 hover:shadow-md">
                   {profilePicture ? (
                     <img 
                       src={profilePicture} 
@@ -137,12 +139,12 @@ function ProfileSettings() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   )}
                   <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -160,8 +162,8 @@ function ProfileSettings() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+            <div className="space-y-1 sm:space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input
                 id="name"
@@ -170,10 +172,11 @@ function ProfileSettings() {
                 onChange={handleInputChange}
                 placeholder="Your full name"
                 required
+                className="w-full"
               />
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <Input
                 id="email"
@@ -181,12 +184,12 @@ function ProfileSettings() {
                 value={profileData.email}
                 readOnly
                 disabled
-                className="bg-gray-50"
+                className="bg-gray-50 w-full"
               />
               <p className="text-xs text-gray-500">Email cannot be changed</p>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
               <Input
                 id="phone"
@@ -194,10 +197,11 @@ function ProfileSettings() {
                 value={profileData.phone}
                 onChange={handleInputChange}
                 placeholder="Your phone number"
+                className="w-full"
               />
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <Label htmlFor="address">Address</Label>
               <Input
                 id="address"
@@ -205,12 +209,13 @@ function ProfileSettings() {
                 value={profileData.address}
                 onChange={handleInputChange}
                 placeholder="Your address"
+                className="w-full"
               />
             </div>
           </div>
           
-          <div className="flex justify-end">
-            <Button type="submit" disabled={saving} className="bg-primary hover:bg-primary/90">
+          <div className="flex justify-end pt-2">
+            <Button type="submit" disabled={saving} className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
               {saving ? (
                 <>
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

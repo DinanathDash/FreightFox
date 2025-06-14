@@ -660,24 +660,26 @@ export async function addTicketReply(ticketId, replyData) {
     const ticketData = ticketSnap.data();
     const replies = ticketData.replies || [];
     
-    // Add the new reply
+    // Create a new Date object for the reply timestamp instead of serverTimestamp()
+    const currentDate = new Date();
+    
+    // Add the new reply with a regular Date object (not serverTimestamp)
     const newReply = {
       ...replyData,
-      timestamp: serverTimestamp(),
+      timestamp: currentDate,
       id: `reply-${Date.now()}`
     };
     
     // Update the ticket with the new reply and update lastUpdated timestamp
     await updateDoc(ticketRef, {
       replies: [...replies, newReply],
-      lastUpdated: serverTimestamp(),
+      lastUpdated: serverTimestamp(), // This is fine as it's at the document level
       status: 'open' // When user replies, change status to 'open'
     });
     
-    // Return the created reply with the timestamp as a JS Date for immediate use
+    // Return the created reply - already using the JS Date object
     return {
-      ...newReply,
-      timestamp: new Date()
+      ...newReply
     };
   } catch (error) {
     console.error('Error adding reply:', error);

@@ -84,24 +84,21 @@ function AccountSettings() {
   return (
     <>
       <Card className="shadow-sm border border-gray-200 bg-white/80 backdrop-blur-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-xl text-primary">Account Management</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="border border-red-100 bg-red-50/50 rounded-lg p-4">
-            <h3 className="text-lg font-medium text-red-600 mb-2 flex items-center">
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="border border-red-100 bg-red-50/50 rounded-lg p-3 sm:p-4">
+            <h3 className="text-base sm:text-lg font-medium text-red-600 mb-2 flex items-center">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 9V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M12 21.41H5.93999C2.46999 21.41 1.01999 18.93 2.69999 15.9L5.81999 10.28L8.75999 5C10.54 1.79 13.46 1.79 15.24 5L18.18 10.29L21.3 15.91C22.98 18.94 21.52 21.42 18.06 21.42H12V21.41Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M11.9945 17H12.0035" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               Danger Zone
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               Once your account is deleted, all of your data including orders and support tickets will be permanently removed.
               This action cannot be undone.
             </p>
-            <Button variant="destructive" onClick={openDeleteDialog} className="bg-red-600 hover:bg-red-700">
+            <Button variant="destructive" onClick={openDeleteDialog} className="bg-red-600 hover:bg-red-700 w-full sm:w-auto">
               <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 5.97998C17.67 5.64998 14.32 5.47998 10.98 5.47998C9 5.47998 7.02 5.57998 5.04 5.77998L3 5.97998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M8.5 4.97L8.72 3.66C8.88 2.71 9 2 10.69 2H13.31C15 2 15.13 2.75 15.28 3.67L15.5 4.97" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -116,54 +113,56 @@ function AccountSettings() {
       </Card>
       
       <Dialog open={showDeleteDialog} onOpenChange={closeDeleteDialog}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] max-w-[95vw] p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle className="text-red-600 flex items-center">
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <DialogTitle className="text-red-600 flex items-center text-base sm:text-lg">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 9V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M12 21.41H5.93999C2.46999 21.41 1.01999 18.93 2.69999 15.9L5.81999 10.28L8.75999 5C10.54 1.79 13.46 1.79 15.24 5L18.18 10.29L21.3 15.91C22.98 18.94 21.52 21.42 18.06 21.42H12V21.41Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M11.9945 17H12.0035" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               Delete Your Account
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               This action cannot be undone. Your account and all related data will be permanently deleted.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="confirmEmail">Please type your email to confirm</Label>
+          <div className="space-y-3 sm:space-y-4 py-2 sm:py-4">
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="confirmEmail" className="text-sm">Please type your email to confirm</Label>
               <Input
                 id="confirmEmail"
                 type="email"
                 value={confirmEmail}
                 onChange={(e) => setConfirmEmail(e.target.value)}
                 placeholder={currentUser?.email || 'Your email'}
+                className="w-full"
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="password">Enter your password to confirm</Label>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="password" className="text-sm">Enter your password to confirm</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your password"
+                className="w-full"
               />
             </div>
           </div>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={closeDeleteDialog} disabled={isDeleting}>
+          <DialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2 pt-2">
+            <Button variant="outline" onClick={closeDeleteDialog} disabled={isDeleting} className="w-full sm:w-auto">
               Cancel
             </Button>
             <Button 
               variant="destructive" 
               onClick={handleAccountDeletion}
               disabled={isDeleting || confirmEmail !== currentUser?.email || !password}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
             >
               {isDeleting ? (
                 <>

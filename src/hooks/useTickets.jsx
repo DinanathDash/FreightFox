@@ -83,10 +83,12 @@ export function useTickets() {
         prevTickets.map(ticket => {
           if (ticket.id === ticketId) {
             const replies = ticket.replies || [];
+            // Use the same approach as in services.js: JavaScript Date object for timestamp
+            const currentDate = new Date();
             return {
               ...ticket,
-              replies: [...replies, { ...reply, timestamp: new Date() }],
-              lastUpdated: new Date(),
+              replies: [...replies, { ...reply, timestamp: currentDate }],
+              lastUpdated: currentDate,
               status: 'open'
             };
           }

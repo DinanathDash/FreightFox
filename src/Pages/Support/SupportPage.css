@@ -62,3 +62,27 @@
 .card-content {
   padding-bottom: 1.5rem;
 }
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .ticket-status-badge {
+    padding: 0.15rem 0.5rem;
+    font-size: 0.65rem;
+  }
+  
+  .card-content {
+    padding-bottom: 1rem;
+  }
+}
+
+/* Make select dropdown more visible on mobile */
+.SelectTrigger:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Improve form scrolling on small screens */
+@media (max-width: 480px) {
+  textarea {
+    max-height: 200px;
+  }
+}
