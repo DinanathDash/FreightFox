@@ -15,8 +15,8 @@ import {
   getDoc, 
   serverTimestamp 
 } from 'firebase/firestore';
-import { auth, db } from '../Firebase/sharedConfig';
-import { storeUserWithAuthId } from '../Firebase/enforceAuthIdStrategy.js';
+import { auth, db } from '../Firebase/shared/sharedConfig';
+import { storeUserWithAuthId } from '../Firebase/development/enforceAuthIdStrategy.js';
 
 // Session timeout in milliseconds (30 minutes)
 const SESSION_TIMEOUT = 30 * 60 * 1000;

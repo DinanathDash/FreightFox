@@ -15,11 +15,11 @@ import {
   deleteDoc,
   writeBatch
 } from 'firebase/firestore';
-import { enhanceOrderWithCoordinates } from './locationUtils.js';
-import { getUserDocRef } from './enforceAuthIdStrategy.js';
+import { enhanceOrderWithCoordinates } from '../development/locationUtils.js';
+import { getUserDocRef } from '../development/enforceAuthIdStrategy.js';
 
 // Import user services
-import { updateUserProfile, deleteUserAccount } from './userServices.js';
+import { updateUserProfile, deleteUserAccount } from '../development/userServices.js';
 
 // Import payment services
 import { 
@@ -28,7 +28,7 @@ import {
   getPaymentById, 
   getPaymentByOrderId, 
   deletePayment 
-} from './paymentServices.js';
+} from '../development/paymentServices.js';
 
 // Export user services alongside other services
 export { updateUserProfile, deleteUserAccount };

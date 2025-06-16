@@ -3,7 +3,7 @@
  * before generating historical orders.
  */
 
-import { db, auth } from './sharedConfig.js';
+import { db, auth } from '../shared/sharedConfig.js';
 import { 
   collection, 
   getDocs, 

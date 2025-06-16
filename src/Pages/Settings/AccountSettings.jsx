@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../Context/AuthContext';
-import { deleteUserAccount } from '../../Firebase/services';
+import { deleteUserAccount } from '../../Firebase/shared/services';
 import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../Components/ui/card';

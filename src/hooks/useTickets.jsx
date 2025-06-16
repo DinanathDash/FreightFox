@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../Context/AuthContext';
-import { getTicketsByUserId, createSupportTicket, addTicketReply } from '../Firebase/services';
+import { getTicketsByUserId, createSupportTicket, addTicketReply } from '../Firebase/shared/services';
 import { toast } from "sonner";
 
 // Helper function to handle Firebase index errors gracefully

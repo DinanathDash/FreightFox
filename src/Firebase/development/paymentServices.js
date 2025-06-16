@@ -1,5 +1,5 @@
 // Payment-related Firebase services
-import { db } from './sharedConfig.js';
+import { db } from '../shared/sharedConfig.js';
 import { 
   collection, 
   query, 

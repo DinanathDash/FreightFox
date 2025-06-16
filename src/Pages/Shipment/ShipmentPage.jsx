@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../Components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../Components/ui/tabs";
 import { toast } from "sonner";
-import { getAllOrders, getOrdersByDateRange } from '../../Firebase/services.js';
+import { getAllOrders, getOrdersByDateRange } from '../../Firebase/shared/services.js';
 import TimelineTracker from '../../Components/Shipment/TimelineTracker.jsx';
 import DateRangeDialog from '../../Components/Dashboard/DateRangeDialog';
 import FiltersDialog from '../../Components/Dashboard/FiltersDialog';

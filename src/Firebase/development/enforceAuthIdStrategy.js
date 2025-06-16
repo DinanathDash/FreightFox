@@ -8,7 +8,7 @@
  * 3. Provide hooks that can be used in the application to ensure proper UID usage
  */
 
-import { db } from './sharedConfig.js';
+import { db } from '../shared/sharedConfig.js';
 import { 
   collection, 
   getDocs, 

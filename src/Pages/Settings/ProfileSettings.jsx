@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../Context/AuthContext';
-import { getUserById } from '../../Firebase/authUserData';
-import { updateUserProfile } from '../../Firebase/services';
+import { getUserById } from '../../Firebase/development/authUserData';
+import { updateUserProfile } from '../../Firebase/shared/services';
 import { updateProfile } from 'firebase/auth';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '../../Components/ui/card';

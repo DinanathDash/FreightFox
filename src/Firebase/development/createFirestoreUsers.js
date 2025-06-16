@@ -3,7 +3,7 @@
  * Since we can't directly list Auth users without the Admin SDK, this script creates users based on provided email addresses.
  */
 
-import { db } from './sharedConfig.js';
+import { db } from '../shared/sharedConfig.js';
 import {
   collection,
   doc,

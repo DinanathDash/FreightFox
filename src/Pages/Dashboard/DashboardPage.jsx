@@ -5,8 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Button } from "../../Components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../Components/ui/select";
 import SimpleTracker from '../../Components/Shipment/SimpleTracker.jsx';
-import { getAllOrders, getDashboardStats, getOrdersByDateRange } from '../../Firebase/services.js';
-import { getTotalShipmentsChartData, getDeliveredShipmentsChartData, getWeeklyChangeStats } from '../../Firebase/statsService.js';
+import { getAllOrders, getDashboardStats, getOrdersByDateRange } from '../../Firebase/shared/services.js';
+import { getTotalShipmentsChartData, getDeliveredShipmentsChartData, getWeeklyChangeStats } from '../../Firebase/development/statsService.js';
 import DateRangeDialog from '../../Components/Dashboard/DateRangeDialog';
 import FiltersDialog from '../../Components/Dashboard/FiltersDialog';
 import StatsCard from './StatsCard';

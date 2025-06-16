@@ -5,7 +5,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { addPayment } from '../../Firebase/paymentServices.js';
+import { addPayment } from '../../Firebase/development/paymentServices.js';
 import { toast } from "sonner";
 import { useAuth } from '../../Context/AuthContext';
 import { Separator } from '../ui/separator';

@@ -13,7 +13,7 @@ import {
   DialogFooter
 } from "../../Components/ui/dialog";
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../Firebase/sharedConfig';
+import { db } from '../../Firebase/shared/sharedConfig';
 import { useAuth } from '../../Context/AuthContext';
 import { toast } from 'sonner';
 import { cn } from "../../lib/utils";

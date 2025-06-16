@@ -1,4 +1,4 @@
-import { db } from './sharedConfig';
+import { db } from '../shared/sharedConfig';
 import { doc, updateDoc, deleteDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
 
 /**

@@ -4,7 +4,7 @@
 
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import readline from 'readline';
-import { app } from './sharedConfig.js';
+import { app } from '../shared/sharedConfig.js';
 
 // Get the auth instance from the Firebase app
 const auth = getAuth(app);

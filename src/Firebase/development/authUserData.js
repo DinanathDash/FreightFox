@@ -1,4 +1,4 @@
-import { auth, db } from './sharedConfig.js';
+import { auth, db } from '../shared/sharedConfig.js';
 import { 
   collection, 
   getDocs,

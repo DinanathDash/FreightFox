@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../Context/AuthContext';
-import { getUserPayments } from '../../Firebase/paymentServices.js';
+import { getUserPayments } from '../../Firebase/development/paymentServices.js';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import PaymentCard from './PaymentCard';
 

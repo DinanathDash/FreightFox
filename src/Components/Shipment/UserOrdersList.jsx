@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../Context/AuthContext';
-import { getUserOrdersWithShipmentDetails } from '../../Firebase/services';
+import { getUserOrdersWithShipmentDetails } from '../../Firebase/shared/services';
 import SimpleTracker from './SimpleTracker.jsx';
 import TimelineTracker from './TimelineTracker.jsx';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
