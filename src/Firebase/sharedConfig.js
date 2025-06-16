@@ -116,6 +116,34 @@ function getFirebaseConfig() {
 const firebaseConfig = getFirebaseConfig();
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+// Initialize Firestore with improved connection handling for production
+const initializeFirestore = () => {
+  try {
+    // Import needed to prevent bundling issues
+    const { getFirestore, initializeFirestore } = require('firebase/firestore');
+    
+    // Use basic initialization for development
+    if (!isBrowser || !import.meta.env.PROD) {
+      return getFirestore(app);
+    }
+    
+    // In production, use more robust configuration
+    return initializeFirestore(app, {
+      // These settings can help with connection issues
+      experimentalForceLongPolling: true,
+      experimentalAutoDetectLongPolling: true,
+      cacheSizeBytes: 1048576 * 50, // 50 MB cache
+      ignoreUndefinedProperties: true,
+    });
+  } catch (error) {
+    // Fallback to basic initialization if advanced options fail
+    console.warn('Using fallback Firestore initialization');
+    return getFirestore(app);
+  }
+};
+
+// Export Firestore instance
 export const db = getFirestore(app);
 export const functions = getFunctions(app);
 export { app };
