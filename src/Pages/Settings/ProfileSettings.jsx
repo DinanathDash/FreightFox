@@ -51,18 +51,18 @@ function ProfileSettings() {
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     // Basic validation
     if (!file.type.startsWith('image/')) {
       toast.error("Please select an image file");
       return;
     }
-    
+
     if (file.size > 2 * 1024 * 1024) { // 2MB limit
       toast.error("Image is too large. Please select an image under 2MB");
       return;
     }
-    
+
     // Preview the image and store it for later upload
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -117,7 +117,7 @@ function ProfileSettings() {
 
   if (loading) {
     return <div className="flex justify-center items-center h-40">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      <div className="inline-block animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-4 border-t-blue-500 border-r-blue-500 border-b-transparent border-l-transparent mb-4"></div>
     </div>;
   }
 
@@ -130,9 +130,9 @@ function ProfileSettings() {
               <label htmlFor="profilePicture" className="cursor-pointer relative group">
                 <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-blue-50 shadow-sm transition-all duration-300 hover:shadow-md">
                   {profilePicture ? (
-                    <img 
-                      src={profilePicture} 
-                      alt="Profile" 
+                    <img
+                      src={profilePicture}
+                      alt="Profile"
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -172,7 +172,7 @@ function ProfileSettings() {
                 className="w-full"
               />
             </div>
-            
+
             <div className="space-y-1 sm:space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <Input
@@ -185,7 +185,7 @@ function ProfileSettings() {
               />
               <p className="text-xs text-gray-500">Email cannot be changed</p>
             </div>
-            
+
             <div className="space-y-1 sm:space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
               <Input
@@ -197,7 +197,7 @@ function ProfileSettings() {
                 className="w-full"
               />
             </div>
-            
+
             <div className="space-y-1 sm:space-y-2">
               <Label htmlFor="address">Address</Label>
               <Input
@@ -210,7 +210,7 @@ function ProfileSettings() {
               />
             </div>
           </div>
-          
+
           <div className="flex justify-end pt-2">
             <Button type="submit" disabled={saving} className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
               {saving ? (
@@ -224,7 +224,7 @@ function ProfileSettings() {
               ) : (
                 <>
                   <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 12L10 16L18 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M6 12L10 16L18 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   Save Changes
                 </>
