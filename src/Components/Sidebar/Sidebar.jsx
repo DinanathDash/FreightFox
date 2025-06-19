@@ -17,7 +17,11 @@ import {
 } from '../ui/dialog';
 
 function Sidebar() {
-  const [isExpanded, setIsExpanded] = useState(true);
+  // Initialize state from localStorage or default to true if not found
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const savedState = localStorage.getItem('sidebarExpanded');
+    return savedState !== null ? JSON.parse(savedState) : true;
+  });
   const { currentUser, logout } = useAuth();
   const location = useLocation();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
@@ -25,16 +29,26 @@ function Sidebar() {
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
 
+  // Save to localStorage whenever isExpanded changes
+  useEffect(() => {
+    localStorage.setItem('sidebarExpanded', JSON.stringify(isExpanded));
+  }, [isExpanded]);
+
   // Detect screen size
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768); // Mobile breakpoint
       setIsTablet(window.innerWidth >= 768 && window.innerWidth < 1024); // Tablet breakpoint
       
-      // Auto-collapse sidebar on tablet
+      // Auto-collapse sidebar on tablet, but respect user preference if already set in localStorage
       if (window.innerWidth < 1024 && window.innerWidth >= 768) {
-        setIsExpanded(false);
-      } else if (window.innerWidth >= 1024) {
+        const savedState = localStorage.getItem('sidebarExpanded');
+        if (savedState === null) {
+          // Only set to false if user hasn't explicitly set a preference
+          setIsExpanded(false);
+        }
+      } else if (window.innerWidth >= 1024 && localStorage.getItem('sidebarExpanded') === null) {
+        // Only set to true if user hasn't explicitly set a preference
         setIsExpanded(true);
       }
     };
@@ -170,7 +184,7 @@ function Sidebar() {
                 </div>
               ) : (
                 <div className="flex items-center justify-center">
-                  <img src={Logo1} alt="ShipEase Icon" className="h-12 w-12" />
+                  <img src={Logo1} alt="ShipEase Icon" className="h-10 w-10" />
                 </div>
               )}
             </div>
