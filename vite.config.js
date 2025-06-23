@@ -18,9 +18,11 @@ export default defineConfig(({ command, mode }) => {
       target: 'es2020', // Ensure we're targeting a compatible version
       rollupOptions: {
         // Use different entry points for dev and prod
-        input: isProd 
-          ? path.resolve(__dirname, 'index.html').replace('main.jsx', 'main.prod.jsx')
-          : path.resolve(__dirname, 'index.html'),
+        input: {
+          main: isProd 
+            ? path.resolve(__dirname, 'src/main.prod.jsx')
+            : path.resolve(__dirname, 'src/main.jsx')
+        },
         external: ['path', 'fs', 'crypto', 'os'] // Mark Node.js builtin modules as external
       }
     },

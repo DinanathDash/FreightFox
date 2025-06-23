@@ -2,7 +2,10 @@
 // It contains the necessary fixes for Firestore connection issues
 // While keeping development code completely untouched
 
-// Import the production Firestore optimizations first
+// Import the production Firebase configuration first, before any other Firebase imports
+import './Firebase/production/productionConfig.js';
+
+// Import the production Firestore optimizations
 import './Firebase/production/enableProductionOptimizations.js';
 
 // Then import everything else normally, exactly like main.jsx
