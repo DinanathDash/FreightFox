@@ -29,7 +29,7 @@ try {
   // Use settings that are known to work better in production
   db = initializeFirestore(app, {
     experimentalForceLongPolling: true,
-    experimentalAutoDetectLongPolling: true,
+    experimentalAutoDetectLongPolling: false, // Set to false to fix 400 errors in Safari/Chrome
     cacheSizeBytes: 50 * 1024 * 1024,
     ignoreUndefinedProperties: true
   });

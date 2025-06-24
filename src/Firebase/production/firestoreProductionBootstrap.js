@@ -21,7 +21,7 @@ const applyProductionPatches = () => {
             // Use optimized settings for production with updated connection parameters
             return initializeFirestore(app, {
               experimentalForceLongPolling: true,
-              experimentalAutoDetectLongPolling: true,  // Enable auto-detection
+              experimentalAutoDetectLongPolling: false,  // Disable auto-detection to fix 400 errors
               cacheSizeBytes: 50 * 1024 * 1024,
               ignoreUndefinedProperties: true
             });

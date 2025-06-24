@@ -132,7 +132,7 @@ const initializeFirestore = () => {
     return initializeFirestore(app, {
       // These settings can help with connection issues
       experimentalForceLongPolling: true,
-      experimentalAutoDetectLongPolling: true,
+      experimentalAutoDetectLongPolling: false, // Set to false to fix 400 errors in Safari/Chrome
       cacheSizeBytes: 1048576 * 50, // 50 MB cache
       ignoreUndefinedProperties: true,
     });

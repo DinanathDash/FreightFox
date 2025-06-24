@@ -107,7 +107,7 @@ export async function ensureFirestoreConnection(maxRetries = 3) {
           // Create a connection with different settings
           const tempDb = initializeFirestore(app, {
             experimentalForceLongPolling: true,
-            experimentalAutoDetectLongPolling: false,
+            experimentalAutoDetectLongPolling: false, // Keep this false to ensure consistency
             cacheSizeBytes: 1048576 * 10, // Smaller cache
           });
           
