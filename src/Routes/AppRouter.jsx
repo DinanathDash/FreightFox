@@ -8,6 +8,7 @@ import PaymentPage from '../Pages/Payment';
 import HelpPage from '../Pages/Help';
 import SupportPage from '../Pages/Support';
 import SettingsPage from '../Pages/Settings';
+import ErrorPage from '../Pages/Error/ErrorPage';
 import SessionTimeout from '../Components/Auth/SessionTimeout';
 import SessionExpiryModal from '../Components/Auth/SessionExpiryModal';
 import LiveChat from '../Components/Support/LiveChat';
@@ -50,7 +51,7 @@ function AppRouter() {
   const { currentUser, loading } = useAuth();
   
   return (
-    <Router>
+    <>
       {currentUser && (
         <>
           <SessionTimeout />
@@ -118,8 +119,13 @@ function AppRouter() {
             </PrivateRoute>
           }
         />
+          
+        {/* Error routes */}
+        <Route path="/404" element={<ErrorPage statusCode={404} />} />
+        <Route path="/error" element={<ErrorPage statusCode={500} />} />
+        <Route path="*" element={<ErrorPage statusCode={404} />} />
       </Routes>
-    </Router>
+    </>
   );
 }
 

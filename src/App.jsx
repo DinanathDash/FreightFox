@@ -3,12 +3,20 @@ import { AuthProvider } from './Context/AuthContext'
 import AppRouter from './Routes/AppRouter'
 import { Toaster } from 'sonner'
 import { useEffect } from 'react'
+import { setupGlobalErrorHandlers } from './lib/errorUtils'
+import { BrowserRouter as Router } from 'react-router-dom'
+import ErrorBoundary from './Components/Error/ErrorBoundary'
 
 // Only in production, check connection
 const isProd = import.meta.env.PROD;
 
 function App() {
   useEffect(() => {
+    // Setup global error handlers - only in production to avoid issues in dev
+    if (isProd) {
+      setupGlobalErrorHandlers();
+    }
+    
     // Only run this in production
     if (isProd) {
       // Dynamically import connection check to avoid bundling issues in dev
@@ -30,10 +38,14 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <AppRouter />
-      <Toaster />
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <ErrorBoundary>
+          <AppRouter />
+          <Toaster />
+        </ErrorBoundary>
+      </AuthProvider>
+    </Router>
   )
 }
 
